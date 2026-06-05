@@ -1,0 +1,25 @@
+plugins:
+  - rubocop-internal_affairs
+  - rubocop-arity
+
+AllCops:
+  NewCops: enable
+  SuggestExtensions: false
+
+Naming/FileName:
+  Exclude:
+    - lib/rubocop-arity.rb
+
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*'
+
+# The shipped defaults (Max: 1) are an intentionally aggressive opinion for
+# application code. The gem's own internal helpers are linted at a more
+# practical threshold rather than modeled into objects just to satisfy them.
+Arity/PositionalArguments:
+  Max: 3
+Arity/KeywordArguments:
+  Max: 3
+Arity/TotalArguments:
+  Max: 4
