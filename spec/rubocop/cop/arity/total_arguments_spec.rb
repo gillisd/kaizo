@@ -109,6 +109,20 @@ RSpec.describe RuboCop::Cop::Arity::TotalArguments, :config do
       RUBY
     end
 
+    it 'exempts `initialize` when the block defines other methods too' do
+      expect_no_offenses(<<~RUBY)
+        Struct.new(:width, :height, :depth, :weight) do
+          def initialize(width:, height:, depth:, weight:)
+            super
+          end
+
+          def magnitude
+            0
+          end
+        end
+      RUBY
+    end
+
     it 'still checks non-initialize methods inside the block' do
       expect_offense(<<~RUBY)
         Struct.new(:value) do
