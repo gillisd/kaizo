@@ -27,8 +27,17 @@ end
 | `Arity/KeywordArguments` | keyword params | `kwarg`, `kwoptarg` |
 | `Arity/TotalArguments` | positional + keyword | all of the above |
 
-Each cop has independent `Min` and `Max` options. All three check `def`,
-`def self.`, `define_method`, and `define_singleton_method`.
+Each cop has a `Max` option. All three check `def`, `def self.`,
+`define_method`, and `define_singleton_method`.
+
+The three cops are independent and complementary — enable whichever dimensions
+you want to bound. `TotalArguments` alone is a single global cap; pairing
+`PositionalArguments` with `KeywordArguments` bounds each kind separately (so you
+can, for instance, forbid positional arguments while allowing a couple of keyword
+ones); running `TotalArguments` alongside them also catches methods that stay
+under each per-kind limit but exceed the total. A method that breaks more than
+one bound is reported once per cop it violates — by design — so enable the
+smallest set that expresses your rule.
 
 ## Installation
 
@@ -62,14 +71,12 @@ Arity/TotalArguments:
   Max: 2        # default (one positional + one keyword)
 ```
 
-`Min` (default `0`, which disables the lower bound) lets you require a floor —
-for example, forbidding positional arguments while requiring keyword arguments:
+Setting `Max: 0` forbids a kind of argument entirely — for example, banning
+positional arguments so that every parameter must be passed by keyword:
 
 ```yaml
 Arity/PositionalArguments:
-  Max: 0        # forbid positional arguments entirely
-Arity/KeywordArguments:
-  Min: 1        # ...and require at least one keyword argument
+  Max: 0        # every argument must be passed by keyword
 ```
 
 ### What is counted
@@ -104,9 +111,8 @@ object should these arguments become?), and that belongs to a human.
 
 Core RuboCop's `Metrics/ParameterLists` enforces a single maximum on the whole
 parameter list. `rubocop-arity` is more granular: it bounds positional and
-keyword arguments separately (and together), supports a lower bound, and is
-framed around domain modeling rather than method complexity. Use whichever fits;
-they can coexist.
+keyword arguments separately (and together), and is framed around domain
+modeling rather than method complexity. Use whichever fits; they can coexist.
 
 ## Known limitations
 

@@ -1,32 +1,28 @@
 # Default configuration for rubocop-arity.
 #
-# These cops put a ceiling (and an optional floor) on how many arguments a
-# method may declare, to apply pressure toward good domain modeling and away
-# from primitive obsession. `def`, `def self.`, `define_method`, and
-# `define_singleton_method` are all checked.
+# These cops put a ceiling on how many arguments a method may declare, to apply
+# pressure toward good domain modeling and away from primitive obsession. `def`,
+# `def self.`, `define_method`, and `define_singleton_method` are all checked.
 #
-# `*rest`, `**keyword-rest`, and `&block` parameters are not counted, and
-# `Min: 0` disables the lower bound. The defaults are deliberately strict --
-# at most one positional and one keyword argument -- to apply maximum pressure;
-# loosen them if that is too aggressive for your codebase.
+# `*rest`, `**keyword-rest`, and `&block` parameters are not counted. The
+# defaults are deliberately strict -- at most one positional and one keyword
+# argument -- to apply maximum pressure; loosen them if that is too aggressive
+# for your codebase.
 
 Arity/KeywordArguments:
   Description: 'Checks that a method does not declare too many keyword arguments.'
   Enabled: true
   VersionAdded: '0.1'
   Max: 1
-  Min: 0
 
 Arity/PositionalArguments:
   Description: 'Checks that a method does not declare too many positional arguments.'
   Enabled: true
   VersionAdded: '0.1'
   Max: 1
-  Min: 0
 
 Arity/TotalArguments:
   Description: 'Checks that a method does not declare too many arguments in total.'
   Enabled: true
   VersionAdded: '0.1'
   Max: 2
-  Min: 0

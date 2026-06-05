@@ -8,8 +8,7 @@ module RuboCop
       # Positional arguments are unnamed and order-dependent, which makes a long
       # list of them especially prone to primitive obsession. Required (`arg`)
       # and optional (`optarg`) parameters are counted; `*rest` and `&block` are
-      # not. When `Min` is greater than zero, methods with too few positional
-      # arguments are also reported.
+      # not.
       #
       # @example Max: 2
       #   # bad

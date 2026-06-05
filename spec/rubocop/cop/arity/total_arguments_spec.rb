@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe RuboCop::Cop::Arity::TotalArguments, :config do
-  context 'with `Max: 3` and `Min: 0`' do
-    let(:cop_config) { { 'Max' => 3, 'Min' => 0 } }
+  context 'with `Max: 3`' do
+    let(:cop_config) { { 'Max' => 3 } }
 
     it 'registers an offense for a `def` with too many positional arguments' do
       expect_offense(<<~RUBY)
@@ -69,27 +69,8 @@ RSpec.describe RuboCop::Cop::Arity::TotalArguments, :config do
     end
   end
 
-  context 'with `Min: 2`' do
-    let(:cop_config) { { 'Min' => 2, 'Max' => 10 } }
-
-    it 'registers an offense for a method with too few arguments' do
-      expect_offense(<<~RUBY)
-        def greet(name)
-            ^^^^^ Method has too few arguments. [1/2]
-        end
-      RUBY
-    end
-
-    it 'does not register an offense when the minimum is met' do
-      expect_no_offenses(<<~RUBY)
-        def greet(name, greeting)
-        end
-      RUBY
-    end
-  end
-
   context 'with a `Struct.new` / `Data.define` value object' do
-    let(:cop_config) { { 'Max' => 3, 'Min' => 0 } }
+    let(:cop_config) { { 'Max' => 3 } }
 
     it 'exempts the `initialize` of a `Struct.new` block' do
       expect_no_offenses(<<~RUBY)

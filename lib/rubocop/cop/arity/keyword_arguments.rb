@@ -8,8 +8,7 @@ module RuboCop
       # Keyword arguments are self-documenting, but a long list of them is still
       # a sign that the related values want to be modeled as an object. Required
       # (`kwarg`) and optional (`kwoptarg`) parameters are counted; `**rest` is
-      # not. When `Min` is greater than zero, methods with too few keyword
-      # arguments are also reported.
+      # not.
       #
       # @example Max: 2
       #   # bad
