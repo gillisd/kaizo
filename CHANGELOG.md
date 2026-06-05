@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.0
+
+- Add `Design/AgentNounClassName` cop: flags classes named as agent nouns
+  ("doers") — names ending in `er`/`or`, or in a configured `ForbiddenSuffixes`
+  entry (default `Service`/`Util`/`Utils`) — unless they end in an
+  `AllowedSuffixes` entry. Checks `class` definitions and
+  `Struct.new`/`Data.define`/`Class.new` assignments. No autocorrection.
+
 ## 0.1.0
 
 Initial release.
