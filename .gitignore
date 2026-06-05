@@ -6,3 +6,7 @@
 /pkg/
 /spec/reports/
 /tmp/
+
+# A library gem resolves dependencies against its host application, so the
+# lockfile is intentionally not committed.
+/Gemfile.lock
