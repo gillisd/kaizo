@@ -1,14 +1,15 @@
 # Default configuration for rubocop-arity.
 #
-# These cops put a ceiling on how many arguments a method may declare, to apply
-# pressure toward good domain modeling and away from primitive obsession. `def`,
-# `def self.`, `define_method`, and `define_singleton_method` are all checked.
-#
-# `*rest`, `**keyword-rest`, and `&block` parameters are not counted. The
-# defaults are deliberately strict -- at most one positional and one keyword
-# argument -- to apply maximum pressure; loosen them if that is too aggressive
-# for your codebase.
+# These cops apply pressure toward good domain modeling and away from primitive
+# obsession: the `Arity/*` cops bound how many arguments a method declares, and
+# the `Design/*` cops flag class names that describe an action rather than the
+# concept they model.
 
+# The `Arity/*` cops check `def`, `def self.`, `define_method`, and
+# `define_singleton_method`. `*rest`, `**keyword-rest`, and `&block` parameters
+# are not counted. The defaults are deliberately strict -- at most one positional
+# and one keyword argument -- to apply maximum pressure; loosen them if that is
+# too aggressive for your codebase.
 Arity/KeywordArguments:
   Description: 'Checks that a method does not declare too many keyword arguments.'
   Enabled: true
@@ -26,3 +27,72 @@ Arity/TotalArguments:
   Enabled: true
   VersionAdded: '0.1'
   Max: 2
+
+# `Design/AgentNounClassName` flags `class` definitions and
+# `Struct.new`/`Data.define`/`Class.new` assignments whose name ends in `er`/`or`
+# (or in a `ForbiddenSuffixes` entry), unless it ends in an `AllowedSuffixes`
+# entry. `ForbiddenSuffixes` wins over `AllowedSuffixes`. Extend either list
+# without restating it using RuboCop's `inherit_mode: merge`.
+Design/AgentNounClassName:
+  Description: 'Avoid naming classes as agent nouns (doers) rather than domain concepts.'
+  Enabled: true
+  VersionAdded: '0.2'
+  AllowedSuffixes:
+    - Adapter
+    - Anchor
+    - Author
+    - Banner
+    - Border
+    - Character
+    - Cluster
+    - Color
+    - Container
+    - Controller
+    - Corner
+    - Cursor
+    - Customer
+    - Decorator
+    - Door
+    - Driver
+    - Enumerator
+    - Error
+    - Folder
+    - Footer
+    - Header
+    - Identifier
+    - Iterator
+    - Layer
+    - Ledger
+    - Letter
+    - Logger
+    - Mailer
+    - Marker
+    - Member
+    - Mirror
+    - Monitor
+    - Number
+    - Order
+    - Owner
+    - Paper
+    - Parameter
+    - Parser
+    - Partner
+    - Pointer
+    - Poster
+    - Presenter
+    - Quarter
+    - Register
+    - Router
+    - Sector
+    - Sensor
+    - Serializer
+    - Server
+    - User
+    - Vector
+    - Vendor
+    - Visitor
+    - Wrapper
+  ForbiddenSuffixes:
+    - Service
+    - Util
+    - Utils

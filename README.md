@@ -39,6 +39,9 @@ under each per-kind limit but exceed the total. A method that breaks more than
 one bound is reported once per cop it violates — by design — so enable the
 smallest set that expresses your rule.
 
+Beyond argument counts, the gem ships **`Design/AgentNounClassName`**, which
+flags classes named after what they *do* — see [Class naming](#class-naming).
+
 ## Installation
 
 Add to your `Gemfile`:
@@ -126,6 +129,56 @@ modeling rather than method complexity. Use whichever fits; they can coexist.
   `define_method(:squared) { _1 * _1 }` is treated as taking no arguments:
   implicit block parameters are not part of a declared signature, which is what
   these cops measure. Spell the parameters out if you want them counted.
+
+## Class naming
+
+`Design/AgentNounClassName` flags classes named as agent nouns — "doers" —
+rather than the domain concepts they model. A class whose name ends in `er`/`or`
+(`OrderManager`, `PaymentProcessor`, `RequestHandler`), or in a configured
+forbidden suffix like `Service`, usually means procedural behavior that wants a
+clearer name or a different home.
+
+```ruby
+# bad
+class PaymentProcessor
+end
+
+# good
+class Payment
+end
+```
+
+It checks `class` definitions and `Struct.new` / `Data.define` / `Class.new`
+constant assignments. Like the arity cops, there is **no autocorrection** — a
+rename is a design decision.
+
+### Tuning the lists
+
+Two suffix lists drive it, both fully configurable and matched against the last
+segment of a namespaced name (`Billing::InvoiceBuilder` is checked as
+`InvoiceBuilder`):
+
+- **`AllowedSuffixes`** — exempt these. Matched as a suffix, so `Controller`
+  clears `Controller` and `UsersController` alike. Ships with a broad default of
+  legitimate `-er`/`-or` words — domain nouns (`Order`, `User`, `Number`,
+  `Error`) and framework terms (`Controller`, `Serializer`, `Adapter`).
+- **`ForbiddenSuffixes`** — always flag these, even when they don't end in
+  `-er`/`-or` (default: `Service`, `Util`, `Utils`). This list **wins** over
+  `AllowedSuffixes`, so it doubles as the way to drop a default exemption.
+
+Extend either list without restating the default using RuboCop's `inherit_mode`:
+
+```yaml
+Design/AgentNounClassName:
+  inherit_mode:
+    merge:
+      - AllowedSuffixes
+      - ForbiddenSuffixes
+  AllowedSuffixes:
+    - Ledger      # OrderLedger now passes
+  ForbiddenSuffixes:
+    - Server      # ApiServer now flagged, despite the default allowance
+```
 
 ## Development
 
