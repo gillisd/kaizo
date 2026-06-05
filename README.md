@@ -108,6 +108,19 @@ keyword arguments separately (and together), supports a lower bound, and is
 framed around domain modeling rather than method complexity. Use whichever fits;
 they can coexist.
 
+## Known limitations
+
+- **The proc/lambda form of `define_method` is not inspected.** Only the block
+  form (`define_method(:foo) { |a, b| }`) is checked. When the body is supplied
+  as a callable — `define_method(:foo, ->(a, b) {})` or
+  `define_method(:foo, captured_method)` — it is left alone, because the argument
+  may be any object that responds to `call` and is not statically countable in
+  the general case.
+- **Numbered and `it` block parameters count as zero.**
+  `define_method(:squared) { _1 * _1 }` is treated as taking no arguments:
+  implicit block parameters are not part of a declared signature, which is what
+  these cops measure. Spell the parameters out if you want them counted.
+
 ## Development
 
 ```bash
