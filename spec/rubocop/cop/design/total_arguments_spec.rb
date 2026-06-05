@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe RuboCop::Cop::Arity::TotalArguments, :config do
+RSpec.describe RuboCop::Cop::Design::TotalArguments, :config do
   context 'with `Max: 3`' do
     let(:cop_config) { { 'Max' => 3 } }
 

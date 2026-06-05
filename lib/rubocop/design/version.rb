@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module RuboCop
-  module Arity
-    VERSION = '0.2.0'
+  module Design
+    VERSION = '0.3.0'
   end
 end

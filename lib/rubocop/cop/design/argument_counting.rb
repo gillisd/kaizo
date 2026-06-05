@@ -2,7 +2,7 @@
 
 module RuboCop
   module Cop
-    module Arity
+    module Design
       # Shared traversal and counting for the argument-arity cops.
       #
       # Walks method definitions written with `def`, `def self.`, `define_method`,

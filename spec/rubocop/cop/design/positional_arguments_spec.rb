@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe RuboCop::Cop::Arity::PositionalArguments, :config do
+RSpec.describe RuboCop::Cop::Design::PositionalArguments, :config do
   context 'with `Max: 2`' do
     let(:cop_config) { { 'Max' => 2 } }
 

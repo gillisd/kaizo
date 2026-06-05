@@ -2,7 +2,7 @@
 
 module RuboCop
   module Cop
-    module Arity
+    module Design
       # Checks that a method does not declare too many positional arguments.
       #
       # Positional arguments are unnamed and order-dependent, which makes a long

@@ -1,28 +1,28 @@
-# Default configuration for rubocop-arity.
+# Default configuration for rubocop-design.
 #
 # These cops apply pressure toward good domain modeling and away from primitive
-# obsession: the `Arity/*` cops bound how many arguments a method declares, and
+# obsession: the `Design/*` cops bound how many arguments a method declares, and
 # the `Design/*` cops flag class names that describe an action rather than the
 # concept they model.
 
-# The `Arity/*` cops check `def`, `def self.`, `define_method`, and
+# The `Design/*` cops check `def`, `def self.`, `define_method`, and
 # `define_singleton_method`. `*rest`, `**keyword-rest`, and `&block` parameters
 # are not counted. The defaults are deliberately strict -- at most one positional
 # and one keyword argument -- to apply maximum pressure; loosen them if that is
 # too aggressive for your codebase.
-Arity/KeywordArguments:
+Design/KeywordArguments:
   Description: 'Checks that a method does not declare too many keyword arguments.'
   Enabled: true
   VersionAdded: '0.1'
   Max: 1
 
-Arity/PositionalArguments:
+Design/PositionalArguments:
   Description: 'Checks that a method does not declare too many positional arguments.'
   Enabled: true
   VersionAdded: '0.1'
   Max: 1
 
-Arity/TotalArguments:
+Design/TotalArguments:
   Description: 'Checks that a method does not declare too many arguments in total.'
   Enabled: true
   VersionAdded: '0.1'

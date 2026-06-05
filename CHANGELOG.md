@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.3.0
+
+- **Renamed the gem from `rubocop-arity` to `rubocop-design`**, and moved every
+  cop into a single `Design/` department: `Arity/PositionalArguments`,
+  `Arity/KeywordArguments`, and `Arity/TotalArguments` are now
+  `Design/PositionalArguments`, `Design/KeywordArguments`, and
+  `Design/TotalArguments`. Update your `Gemfile`, your `.rubocop.yml`
+  `plugins:` entry, and any cop names in your configuration.
+
 ## 0.2.0
 
 - Add `Design/AgentNounClassName` cop: flags classes named as agent nouns

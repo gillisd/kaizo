@@ -3,14 +3,14 @@
 require 'lint_roller'
 
 module RuboCop
-  module Arity
-    # A plugin that integrates rubocop-arity with RuboCop's plugin system.
+  module Design
+    # A plugin that integrates rubocop-design with RuboCop's plugin system.
     class Plugin < LintRoller::Plugin
       def about
         LintRoller::About.new(
-          name: 'rubocop-arity',
+          name: 'rubocop-design',
           version: VERSION,
-          homepage: 'https://github.com/flipmine/rubocop-arity',
+          homepage: 'https://github.com/flipmine/rubocop-design',
           description: 'Cops that limit the number of arguments a method may declare.'
         )
       end

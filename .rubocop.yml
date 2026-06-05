@@ -1,6 +1,6 @@
 plugins:
   - rubocop-internal_affairs
-  - rubocop-arity
+  - rubocop-design
 
 AllCops:
   NewCops: enable
@@ -8,7 +8,7 @@ AllCops:
 
 Naming/FileName:
   Exclude:
-    - lib/rubocop-arity.rb
+    - lib/rubocop-design.rb
 
 Metrics/BlockLength:
   Exclude:
@@ -17,9 +17,9 @@ Metrics/BlockLength:
 # The shipped defaults (Max: 1) are an intentionally aggressive opinion for
 # application code. The gem's own internal helpers are linted at a more
 # practical threshold rather than modeled into objects just to satisfy them.
-Arity/PositionalArguments:
+Design/PositionalArguments:
   Max: 3
-Arity/KeywordArguments:
+Design/KeywordArguments:
   Max: 3
-Arity/TotalArguments:
+Design/TotalArguments:
   Max: 4
