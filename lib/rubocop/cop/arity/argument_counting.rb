@@ -67,7 +67,14 @@ module RuboCop
         end
 
         def allowed_initialize?(node)
-          node.method?(:initialize) && struct_or_data_definition?(node.parent)
+          node.method?(:initialize) && struct_or_data_definition?(enclosing_block(node))
+        end
+
+        # The block a method definition lives in, seen through the `begin` that
+        # wraps the body when the block holds more than one statement.
+        def enclosing_block(node)
+          parent = node.parent
+          parent&.begin_type? ? parent.parent : parent
         end
 
         def struct_or_data_definition?(node)
