@@ -2,7 +2,7 @@
 
 module RuboCop
   module Cop
-    module Arity
+    module Design
       # Checks that a method does not declare too many keyword arguments.
       #
       # Keyword arguments are self-documenting, but a long list of them is still

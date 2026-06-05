@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require_relative 'arity/version'
+require_relative 'design/version'
 
 module RuboCop
-  module Arity
+  module Design
     class Error < StandardError; end
     # Your code goes here...
   end

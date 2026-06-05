@@ -1,7 +1,8 @@
-# RuboCop::Arity
+# RuboCop::Design
 
-A [RuboCop](https://rubocop.org) extension that limits how many arguments a
-method may declare.
+A [RuboCop](https://rubocop.org) extension whose cops pressure better object and
+domain design — bounding how many arguments a method declares, and flagging class
+names that describe an action rather than the concept they model.
 
 A long argument list is a smell: it usually means a method is juggling loose
 primitives that want to be modeled as an object. By putting a ceiling on the
@@ -23,9 +24,9 @@ end
 
 | Cop | Bounds | Counts |
 |-----|--------|--------|
-| `Arity/PositionalArguments` | positional params | `arg`, `optarg` |
-| `Arity/KeywordArguments` | keyword params | `kwarg`, `kwoptarg` |
-| `Arity/TotalArguments` | positional + keyword | all of the above |
+| `Design/PositionalArguments` | positional params | `arg`, `optarg` |
+| `Design/KeywordArguments` | keyword params | `kwarg`, `kwoptarg` |
+| `Design/TotalArguments` | positional + keyword | all of the above |
 
 Each cop has a `Max` option. All three check `def`, `def self.`,
 `define_method`, and `define_singleton_method`.
@@ -47,14 +48,14 @@ flags classes named after what they *do* — see [Class naming](#class-naming).
 Add to your `Gemfile`:
 
 ```ruby
-gem 'rubocop-arity', require: false
+gem 'rubocop-design', require: false
 ```
 
 Enable the plugin in `.rubocop.yml`:
 
 ```yaml
 plugins:
-  - rubocop-arity
+  - rubocop-design
 ```
 
 (Requires RuboCop 1.72.2+ for the `lint_roller` plugin API.)
@@ -66,11 +67,11 @@ argument** — to apply maximum pressure toward modeling. Loosen them if that is
 too aggressive for your codebase:
 
 ```yaml
-Arity/PositionalArguments:
+Design/PositionalArguments:
   Max: 1        # default
-Arity/KeywordArguments:
+Design/KeywordArguments:
   Max: 1        # default
-Arity/TotalArguments:
+Design/TotalArguments:
   Max: 2        # default (one positional + one keyword)
 ```
 
@@ -78,7 +79,7 @@ Setting `Max: 0` forbids a kind of argument entirely — for example, banning
 positional arguments so that every parameter must be passed by keyword:
 
 ```yaml
-Arity/PositionalArguments:
+Design/PositionalArguments:
   Max: 0        # every argument must be passed by keyword
 ```
 
@@ -113,7 +114,7 @@ object should these arguments become?), and that belongs to a human.
 ## Relationship to `Metrics/ParameterLists`
 
 Core RuboCop's `Metrics/ParameterLists` enforces a single maximum on the whole
-parameter list. `rubocop-arity` is more granular: it bounds positional and
+parameter list. `rubocop-design` is more granular: it bounds positional and
 keyword arguments separately (and together), and is framed around domain
 modeling rather than method complexity. Use whichever fits; they can coexist.
 
@@ -149,7 +150,7 @@ end
 ```
 
 It checks `class` definitions and `Struct.new` / `Data.define` / `Class.new`
-constant assignments. Like the arity cops, there is **no autocorrection** — a
+constant assignments. Like the argument-count cops, there is **no autocorrection** — a
 rename is a design decision.
 
 ### Tuning the lists
