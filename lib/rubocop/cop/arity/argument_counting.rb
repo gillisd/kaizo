@@ -6,40 +6,16 @@ module RuboCop
       # Shared traversal and counting for the argument-arity cops.
       #
       # Walks method definitions written with `def`, `def self.`, `define_method`,
-      # and `define_singleton_method`, and checks the configured `Min`/`Max`
-      # bounds against a count produced by the including cop. Including cops must
-      # define a private `arity(arguments)` method and a `KIND` constant. `Min`
-      # is ignored when zero, and the `initialize` of a `Struct.new`/`Data.define`
-      # block is exempt.
+      # and `define_singleton_method`, and reports when the argument count
+      # produced by the including cop exceeds the configured `Max`. Including cops
+      # must define a private `arity(arguments)` method and a `KIND` constant. The
+      # `initialize` of a `Struct.new`/`Data.define` block is exempt.
       module ArgumentCounting
         POSITIONAL_TYPES = %i[arg optarg].freeze
         KEYWORD_TYPES = %i[kwarg kwoptarg].freeze
         DEFINE_METHODS = %i[define_method define_singleton_method].freeze
         STRUCT_OR_DATA = { 'Struct' => :new, 'Data' => :define }.freeze
-
-        # The configured bounds for one kind of argument. Given a count, returns
-        # the offense message when it is out of bounds, or `nil` when acceptable.
-        # Plain object rather than a `Struct` so the `max`/`min` readers do not
-        # shadow `Enumerable#max`/`#min` (Lint/StructNewOverride).
-        class Bound
-          def initialize(kind:, max:, min:)
-            @kind = kind
-            @max = max
-            @min = min
-          end
-
-          def too_many(count)
-            return unless @max && count > @max
-
-            format('Method has too many %<kind>s. [%<count>d/%<max>d]', kind: @kind, count: count, max: @max)
-          end
-
-          def too_few(count)
-            return unless @min&.positive? && count < @min
-
-            format('Method has too few %<kind>s. [%<count>d/%<min>d]', kind: @kind, count: count, min: @min)
-          end
-        end
+        MSG = 'Method has too many %<kind>s. [%<count>d/%<max>d]'
 
         def on_def(node)
           return if allowed_initialize?(node)
@@ -65,15 +41,12 @@ module RuboCop
         end
 
         def check_arity(node)
-          bound = Bound.new(kind: self.class::KIND, max: cop_config['Max'], min: cop_config['Min'])
+          max = cop_config['Max']
           count = arity(node.arguments)
-          location = offense_location(node)
+          return unless max && count > max
 
-          if (message = bound.too_many(count))
-            add_offense(location, message: message) { self.max = count }
-          elsif (message = bound.too_few(count))
-            add_offense(location, message: message)
-          end
+          message = format(MSG, kind: self.class::KIND, count: count, max: max)
+          add_offense(offense_location(node), message: message) { self.max = count }
         end
 
         def offense_location(node)

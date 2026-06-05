@@ -2,7 +2,7 @@
 
 RSpec.describe RuboCop::Cop::Arity::KeywordArguments, :config do
   context 'with `Max: 2`' do
-    let(:cop_config) { { 'Max' => 2, 'Min' => 0 } }
+    let(:cop_config) { { 'Max' => 2 } }
 
     it 'registers an offense for too many keyword arguments' do
       expect_offense(<<~RUBY)

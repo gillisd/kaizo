@@ -10,12 +10,11 @@ module RuboCop
       # argument list is often a sign of primitive obsession, and bundling the
       # related values into an object usually expresses the intent better.
       #
-      # `*rest`, `**keyword-rest`, and `&block` arguments are not counted. When
-      # `Min` is greater than zero, methods with too few arguments are also
-      # reported. The `initialize` of a `Struct.new`/`Data.define` block is
-      # exempt, since those parameters mirror the value object's attributes.
+      # `*rest`, `**keyword-rest`, and `&block` arguments are not counted. The
+      # `initialize` of a `Struct.new`/`Data.define` block is exempt, since those
+      # parameters mirror the value object's attributes.
       #
-      # @example Max: 3 (default)
+      # @example Max: 3
       #   # bad
       #   def calculate_volume(width, length, height, shape_type)
       #   end

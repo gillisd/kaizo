@@ -2,7 +2,7 @@
 
 RSpec.describe RuboCop::Cop::Arity::PositionalArguments, :config do
   context 'with `Max: 2`' do
-    let(:cop_config) { { 'Max' => 2, 'Min' => 0 } }
+    let(:cop_config) { { 'Max' => 2 } }
 
     it 'registers an offense for too many positional arguments' do
       expect_offense(<<~RUBY)
@@ -23,18 +23,6 @@ RSpec.describe RuboCop::Cop::Arity::PositionalArguments, :config do
     it 'does not count keyword arguments' do
       expect_no_offenses(<<~RUBY)
         def configure(host, port:, timeout:, retries:)
-        end
-      RUBY
-    end
-  end
-
-  context 'with `Min: 1`' do
-    let(:cop_config) { { 'Min' => 1, 'Max' => 10 } }
-
-    it 'registers an offense for too few positional arguments' do
-      expect_offense(<<~RUBY)
-        def search(query:)
-            ^^^^^^ Method has too few positional arguments. [0/1]
         end
       RUBY
     end
