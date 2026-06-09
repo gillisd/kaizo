@@ -1,6 +1,4 @@
-# frozen_string_literal: true
-
-require 'lint_roller'
+require "lint_roller"
 
 module RuboCop
   module Design
@@ -8,10 +6,10 @@ module RuboCop
     class Plugin < LintRoller::Plugin
       def about
         LintRoller::About.new(
-          name: 'rubocop-design',
+          name: "rubocop-design",
           version: VERSION,
-          homepage: 'https://github.com/flipmine/rubocop-design',
-          description: 'Cops that limit the number of arguments a method may declare.'
+          homepage: "https://github.com/flipmine/rubocop-design",
+          description: "Cops that limit the number of arguments a method may declare.",
         )
       end
 
@@ -23,7 +21,7 @@ module RuboCop
         LintRoller::Rules.new(
           type: :path,
           config_format: :rubocop,
-          value: Pathname.new(__dir__).join('../../../config/default.yml')
+          value: Pathname.new(__dir__).join("../../../config/default.yml"),
         )
       end
     end

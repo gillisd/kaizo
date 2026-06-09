@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module RuboCop
   module Cop
     module Design
@@ -33,9 +31,9 @@ module RuboCop
       #   end
       #
       class AgentNounClassName < Base
-        MSG = 'Avoid the doer-style class name `%<name>s`. ' \
-              'Prefer a name for the concept it models over the action it performs.'
-        AGENT_NOUN = /(?:er|or)\z/i.freeze
+        MSG = "Avoid the doer-style class name `%<name>s`. " \
+              "Prefer a name for the concept it models over the action it performs.".freeze
+        AGENT_NOUN = /(?:er|or)\z/i
 
         # @!method class_builder_assignment(node)
         def_node_matcher :class_builder_assignment, <<~PATTERN
@@ -64,9 +62,9 @@ module RuboCop
         end
 
         def offending?(name)
-          return true if ends_with_any?(name, 'ForbiddenSuffixes')
+          return true if ends_with_any?(name, "ForbiddenSuffixes")
 
-          AGENT_NOUN.match?(name) && !ends_with_any?(name, 'AllowedSuffixes')
+          AGENT_NOUN.match?(name) && !ends_with_any?(name, "AllowedSuffixes")
         end
 
         def ends_with_any?(name, config_key)

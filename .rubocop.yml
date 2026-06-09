@@ -1,18 +1,190 @@
+# ===========================================================================
+# RuboCop Configuration
+#
+# Base: Stock RuboCop defaults
+# AI guardrails: rubocop-claude plugin (Claude/ cops)
+# Performance: rubocop-performance (with chain-hostile cops disabled)
+#
+# This gem also dogfoods its own cops (rubocop-design), at relaxed thresholds.
+#
+# Philosophy: idiomatic Ruby, pipeline-style chaining, strict for AI agents,
+# readable for humans.
+# ===========================================================================
+
 plugins:
-  - rubocop-internal_affairs
+  - rubocop-claude
+  - rubocop-rspec
+  - rubocop-performance
+  - rubocop-rake
   - rubocop-design
 
 AllCops:
   NewCops: enable
   SuggestExtensions: false
+  TargetRubyVersion: 4.0
+  Exclude:
+    - bin/*
+    - vendor/**/*
+    - references/**/*
 
+# The hyphenated entry point can't match a constant name.
 Naming/FileName:
   Exclude:
     - lib/rubocop-design.rb
 
+# ===========================================================================
+# Overrides from stock — personal style preferences
+# ===========================================================================
+
+# Double quotes everywhere. One less decision to make.
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
+Style/StringLiteralsInInterpolation:
+  EnforcedStyle: double_quotes
+
+# Frozen string literal is transitional cruft. Ruby 3.4 has chilled strings,
+# full default freeze is coming in a future Ruby.
+Style/FrozenStringLiteralComment:
+  EnforcedStyle: never
+
+# Pipeline style. Chaining multi-line blocks is the whole point.
+Style/MultilineBlockChain:
+  Enabled: false
+
+# Block delimiters are a taste call. Pipeline code uses braces for chaining,
+# do/end for side effects. No cop captures this nuance.
+Style/BlockDelimiters:
+  Enabled: false
+
+# Write arrays like arrays.
+Style/WordArray:
+  Enabled: false
+
+Style/SymbolArray:
+  Enabled: false
+
+# Argument indentation: consistent 2-space indent, not aligned to first arg.
+Layout/FirstArgumentIndentation:
+  EnforcedStyle: consistent
+
+# Dot-aligned chaining. Dots form a visual column.
+Layout/MultilineMethodCallIndentation:
+  EnforcedStyle: aligned
+
+# ===========================================================================
+# Pipeline style — loosen cops (stock and Claude/) that fight chaining
+# ===========================================================================
+
+Claude/NoOverlyDefensiveCode:
+  MaxSafeNavigationChain: 2
+
+Style/SafeNavigation:
+  MaxChainLength: 2
+
+# Allow `return a, b` for tuple-style returns.
+Style/RedundantReturn:
+  AllowMultipleReturnValues: true
+
+# ===========================================================================
+# Overrides from rubocop-performance — disable chain-hostile cops
+# ===========================================================================
+
+Performance/ChainArrayAllocation:
+  Enabled: false
+
+Performance/MapMethodChain:
+  Enabled: false
+
+# ===========================================================================
+# Project-specific overrides — tightening, config, and exemptions
+# ===========================================================================
+
+# Short blocks push toward small chained steps instead of fat lambdas.
 Metrics/BlockLength:
+  Max: 8
+  CountAsOne:
+    - array
+    - hash
+    - heredoc
+    - method_call
+  AllowedMethods:
+    - command
+    - describe
+    - context
+    - shared_examples
+    - shared_examples_for
+    - shared_context
   Exclude:
-    - 'spec/**/*'
+    - "rubocop-design.gemspec"
+    - "spec/**/*"
+    - "Rakefile"
+
+# The gemspec uses patterns that trigger Claude cops legitimately.
+Claude/NoFancyUnicode:
+  Exclude:
+    - "rubocop-design.gemspec"
+
+# Shared test contexts legitimately define many helpers.
+RSpec/MultipleMemoizedHelpers:
+  Max: 10
+
+# Prefer explicit named parameters over anonymous forwarding (*, **, &):
+# they read more clearly and document the method's real signature.
+Style/ArgumentsForwarding:
+  Enabled: false
+
+# Explicit begin/rescue/end is clearer than implicit method-body rescue.
+Style/RedundantBegin:
+  Enabled: false
+
+# Compact class names are fine for small files and tests.
+Style/ClassAndModuleChildren:
+  Enabled: false
+
+# Classes get rdoc.
+Style/Documentation:
+  Enabled: true
+  Exclude:
+    - "spec/**/*"
+
+# Trailing commas in multiline literals and arguments.
+Style/TrailingCommaInArrayLiteral:
+  EnforcedStyleForMultiline: comma
+
+Style/TrailingCommaInHashLiteral:
+  EnforcedStyleForMultiline: comma
+
+Style/TrailingCommaInArguments:
+  EnforcedStyleForMultiline: comma
+
+# ===========================================================================
+# RSpec — rubocop-rspec overrides
+# ===========================================================================
+
+# Not every describe block wraps a class.
+RSpec/DescribeClass:
+  Enabled: false
+
+# Subject placement is a readability call, not a rule.
+RSpec/LeadingSubject:
+  Enabled: false
+
+# Block style for expect { }.to change { } reads like a sentence.
+RSpec/ExpectChange:
+  EnforcedStyle: block
+
+RSpec/NamedSubject:
+  Enabled: false
+
+# Cop specs are mostly heredoc fixtures; count each heredoc as a single line.
+RSpec/ExampleLength:
+  CountAsOne:
+    - heredoc
+
+# ===========================================================================
+# rubocop-design — dogfood our own cops at practical thresholds
+# ===========================================================================
 
 # The shipped defaults (Max: 1) are an intentionally aggressive opinion for
 # application code. The gem's own internal helpers are linted at a more

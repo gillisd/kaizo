@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module RuboCop
   module Cop
     module Design
@@ -33,10 +31,10 @@ module RuboCop
       class NestedMethodCalls < Base
         include AllowedMethods
 
-        exclude_limit 'Max'
+        exclude_limit "Max"
 
-        MSG = 'Avoid nesting method calls in arguments; name an intermediate ' \
-              'result instead. [%<depth>d/%<max>d]'
+        MSG = "Avoid nesting method calls in arguments; name an intermediate " \
+              "result instead. [%<depth>d/%<max>d]".freeze
 
         # Node types whose children sit in argument position -- looked through to
         # reach nested calls (but never into a block body).
@@ -46,7 +44,7 @@ module RuboCop
           return if nested_in_call_argument?(node)
           return if allowed_method?(node.method_name)
 
-          max = cop_config['Max']
+          max = cop_config["Max"]
           depth = nesting_depth(node)
           return unless max && depth > max
 
@@ -91,7 +89,7 @@ module RuboCop
           return false if node.operator_method?
           return false if allowed_method?(node.method_name)
 
-          does_work?(node)
+          chain_takes_arguments?(node)
         end
 
         # A call reads as a real nested step -- rather than a plain receiver
@@ -99,32 +97,32 @@ module RuboCop
         # its receiver chain, actually takes arguments. Bare reader chains do
         # not count (that is the planned chaining cop's concern), while
         # `another("bar").chain` still does.
-        def does_work?(node)
+        def chain_takes_arguments?(node)
           return false unless node.call_type?
           return true if node.arguments.any?
 
-          node.receiver ? does_work?(node.receiver) : false
+          node.receiver ? chain_takes_arguments?(node.receiver) : false
         end
 
         # Whether `node` sits in an enclosing call's argument list (through
-        # literals), so an outer call already accounts for it.
+        # literal containers or the call a block is attached to), so an outer
+        # call already accounts for it.
         def nested_in_call_argument?(node)
           parent = node.parent
           return false unless parent
+          return parent.arguments.include?(node) if parent.call_type?
+          return nested_in_call_argument?(parent) if reached_through?(parent, node)
 
-          case parent.type
-          when :send, :csend
-            parent.arguments.include?(node)
-          when :array, :hash, :pair, :begin, :splat, :kwsplat
-            nested_in_call_argument?(parent)
-          when :block, :numblock, :itblock
-            # A call that carries a block is reached through its block node;
-            # treat the block as transparent so the call it is attached to is
-            # still recognised as nested inside any enclosing argument.
-            parent.send_node.equal?(node) && nested_in_call_argument?(parent)
-          else
-            false
-          end
+          false
+        end
+
+        # A parent an outer call sees through to reach `node`: any literal
+        # container, or a block -- but only via the call it is attached to,
+        # never its body.
+        def reached_through?(parent, node)
+          return true if TRANSPARENT_ARGUMENT_TYPES.include?(parent.type)
+
+          parent.any_block_type? && parent.send_node.equal?(node)
         end
       end
     end
