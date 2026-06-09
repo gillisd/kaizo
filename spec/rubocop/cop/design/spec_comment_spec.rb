@@ -36,6 +36,14 @@ RSpec.describe RuboCop::Cop::Design::SpecComment, :config do
     RUBY
   end
 
+  it "flags a magic-comment-shaped comment below the leading position" do
+    expect_offense(<<~RUBY)
+      it { is_expected.to be_valid }
+      # frozen_string_literal: true
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Avoid comments in specs. Express the intent as a `context`/`it` description or a clearer example instead.
+    RUBY
+  end
+
   it "does not flag rubocop directives" do
     expect_no_offenses(<<~RUBY)
       # rubocop:disable Layout/LineLength

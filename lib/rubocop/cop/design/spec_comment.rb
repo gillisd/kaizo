@@ -11,7 +11,7 @@ module RuboCop
       #
       # By default only `*_spec.rb` files are inspected (see `Include`). Magic
       # comments (`# frozen_string_literal: true`, `# encoding: ...`), RuboCop
-      # directives (`# rubocop:disable`/`# rubocop:enable`), and shebangs are
+      # directives (any `# rubocop:` comment), and shebangs are
       # never flagged; add further exemptions with `AllowedPatterns`. There is no
       # autocorrection: turning an explanation into a spec is a design decision.
       #
@@ -53,7 +53,13 @@ module RuboCop
         end
 
         def magic_comment?(comment)
-          MagicComment.parse(comment.text).any?
+          comment.loc.line <= leading_magic_comment_limit && MagicComment.parse(comment.text).any?
+        end
+
+        # Magic comments are only honoured at the top of the file (the first
+        # line, or the second after a shebang); below that they are plain comments.
+        def leading_magic_comment_limit
+          processed_source.lines.first&.start_with?("#!") ? 2 : 1
         end
 
         def directive_comment?(comment)
