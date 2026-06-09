@@ -248,7 +248,7 @@ end
 
 By default only `*_spec.rb` files are inspected. Magic comments
 (`# frozen_string_literal: true`, `# encoding: …`), RuboCop directives
-(`# rubocop:disable` / `# rubocop:enable`), and shebangs are never flagged. Like
+(any `# rubocop:` comment), and shebangs are never flagged. Like
 the other cops, there is **no autocorrection** — turning an explanation into a
 spec is a design decision.
 
