@@ -108,3 +108,16 @@ Design/NestedMethodCalls:
   VersionAdded: '0.4'
   Max: 1
   AllowedMethods: []
+
+# `Design/SpecComment` treats comments in spec files as a smell -- a comment
+# usually wants to be a `context`/`it` description or a better-structured
+# example. Magic comments, `# rubocop:` directives, and shebangs are exempt;
+# add more exemptions with `AllowedPatterns`. Broaden `Include` (e.g. add
+# `**/spec/**/*` or `**/*_test.rb`) to cover support files or Minitest.
+Design/SpecComment:
+  Description: 'Avoid comments in spec files; express the intent as well-structured specs.'
+  Enabled: true
+  VersionAdded: '0.5'
+  Include:
+    - '**/*_spec.rb'
+  AllowedPatterns: []
