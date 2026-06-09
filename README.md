@@ -2,8 +2,9 @@
 
 A [RuboCop](https://rubocop.org) extension whose cops pressure better object and
 domain design — bounding how many arguments a method declares, flagging class
-names that describe an action rather than the concept they model, and flagging
-method calls nested too deeply in other calls' arguments.
+names that describe an action rather than the concept they model, flagging
+method calls nested too deeply in other calls' arguments, and treating comments
+in specs as prose that should become structure.
 
 A long argument list is a smell: it usually means a method is juggling loose
 primitives that want to be modeled as an object. By putting a ceiling on the
@@ -42,9 +43,11 @@ one bound is reported once per cop it violates — by design — so enable the
 smallest set that expresses your rule.
 
 Beyond argument counts, the gem ships **`Design/AgentNounClassName`**, which
-flags classes named after what they *do* (see [Class naming](#class-naming)), and
+flags classes named after what they *do* (see [Class naming](#class-naming)),
 **`Design/NestedMethodCalls`**, which flags calls buried too deeply in other
-calls' arguments (see [Nested method calls](#nested-method-calls)).
+calls' arguments (see [Nested method calls](#nested-method-calls)), and
+**`Design/SpecComment`**, which flags comments in spec files (see
+[Comments in specs](#comments-in-specs)).
 
 ## Installation
 
@@ -219,6 +222,61 @@ Design/NestedMethodCalls:
 
 Like the other cops, there is **no autocorrection** — choosing the intermediate
 name is a design decision.
+
+## Comments in specs
+
+`Design/SpecComment` flags comments in spec files. A comment in a spec is almost
+always a sign that the spec is doing the job of its own description: if you need a
+sentence to explain what an example sets up or asserts, that sentence usually
+wants to be a `context`/`it` description, a clearer example name, or another
+example — not prose riding alongside the code.
+
+```ruby
+# bad
+it 'permits the request' do
+  # an admin can see everything
+  user = create(:user, admin: true)
+  expect(policy).to permit(user)
+end
+
+# good
+it 'permits an admin to see everything' do
+  admin = create(:user, admin: true)
+  expect(policy).to permit(admin)
+end
+```
+
+By default only `*_spec.rb` files are inspected. Magic comments
+(`# frozen_string_literal: true`, `# encoding: …`), RuboCop directives
+(`# rubocop:disable` / `# rubocop:enable`), and shebangs are never flagged. Like
+the other cops, there is **no autocorrection** — turning an explanation into a
+spec is a design decision.
+
+### Scope and escape hatches
+
+The cop is scoped through its `Include`, so broaden it to cover support files or a
+Minitest suite (using `inherit_mode: merge` to add to the default rather than
+replace it):
+
+```yaml
+Design/SpecComment:
+  inherit_mode:
+    merge:
+      - Include
+  Include:
+    - '**/spec/**/*'     # spec_helper, support/, factories
+    - '**/*_test.rb'     # Minitest / Test::Unit
+```
+
+Permit specific comments with `AllowedPatterns` — regexps matched against the
+full comment text, leading `#` included:
+
+```yaml
+Design/SpecComment:
+  AllowedPatterns:
+    - '\A#\s*@rbs'       # rbs-inline type annotations
+    - 'noqa'
+```
 
 ## Development
 

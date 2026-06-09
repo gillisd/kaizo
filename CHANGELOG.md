@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.5.0
+
+- Add `Design/SpecComment` cop: flags comments in spec files (`**/*_spec.rb`),
+  on the principle that a comment in a spec usually wants to be a `context`/`it`
+  description or a better-structured example. Magic comments, `# rubocop:`
+  directives, and shebangs are exempt; add more with `AllowedPatterns`. No
+  autocorrection. Enabled by default.
+
 ## 0.4.0
 
 - Add `Design/NestedMethodCalls` cop: flags method calls nested too deeply in
