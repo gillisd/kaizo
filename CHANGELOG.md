@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.4.0
+
+- Add `Design/NestedMethodCalls` cop: flags method calls nested too deeply in
+  argument positions -- e.g. `foo(SomeClass.new(another("bar").chain))` -- on the
+  principle that the intermediate results want names. Only argument nesting is
+  counted (receiver chains are a separate concern); operator methods never count,
+  and `AllowedMethods` exempts named methods. Bounded by `Max` (default 1). No
+  autocorrection. Enabled by default.
+
 ## 0.3.0
 
 - **Renamed the gem from `rubocop-arity` to `rubocop-design`**, and moved every

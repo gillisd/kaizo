@@ -1,8 +1,9 @@
 # RuboCop::Design
 
 A [RuboCop](https://rubocop.org) extension whose cops pressure better object and
-domain design — bounding how many arguments a method declares, and flagging class
-names that describe an action rather than the concept they model.
+domain design — bounding how many arguments a method declares, flagging class
+names that describe an action rather than the concept they model, and flagging
+method calls nested too deeply in other calls' arguments.
 
 A long argument list is a smell: it usually means a method is juggling loose
 primitives that want to be modeled as an object. By putting a ceiling on the
@@ -41,7 +42,9 @@ one bound is reported once per cop it violates — by design — so enable the
 smallest set that expresses your rule.
 
 Beyond argument counts, the gem ships **`Design/AgentNounClassName`**, which
-flags classes named after what they *do* — see [Class naming](#class-naming).
+flags classes named after what they *do* (see [Class naming](#class-naming)), and
+**`Design/NestedMethodCalls`**, which flags calls buried too deeply in other
+calls' arguments (see [Nested method calls](#nested-method-calls)).
 
 ## Installation
 
@@ -180,6 +183,42 @@ Design/AgentNounClassName:
   ForbiddenSuffixes:
     - Server      # ApiServer now flagged, despite the default allowance
 ```
+
+## Nested method calls
+
+`Design/NestedMethodCalls` flags method calls nested too deeply in **argument**
+positions — `foo(SomeClass.new(another("bar").chain))` — on the principle that the
+intermediate results want names. Reaching for the right name (or extracting a
+method) almost always reads better, and is easier to debug, than peeling
+parentheses apart.
+
+```ruby
+# bad
+wrap(parse(read(io)))
+
+# good - name the intermediate result
+parsed = parse(read(io))
+wrap(parsed)
+
+# good - a single nested call is fine
+puts compute(value)
+```
+
+Depth is bounded by `Max` (default `1` — one nested call is allowed). Only nesting
+through **arguments** is counted; a *receiver chain* such as
+`user.account.owner.name` is a separate concern (a dedicated chaining cop is
+planned). Operator methods (`a + b`, `arr[i]`) never count, block bodies are not
+traversed, and `AllowedMethods` exempts calls to named methods:
+
+```yaml
+Design/NestedMethodCalls:
+  Max: 1            # default; raise to allow deeper nesting
+  AllowedMethods:
+    - expect        # e.g. don't count RSpec's expect(...) wrapper
+```
+
+Like the other cops, there is **no autocorrection** — choosing the intermediate
+name is a design decision.
 
 ## Development
 

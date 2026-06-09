@@ -97,3 +97,14 @@ Design/AgentNounClassName:
     - Service
     - Util
     - Utils
+
+# `Design/NestedMethodCalls` flags calls whose arguments are themselves calls,
+# nested deeper than `Max` levels -- e.g. `foo(SomeClass.new(another("bar").chain))`.
+# Only argument nesting is counted (receiver chains are a separate concern);
+# operator methods never count; `AllowedMethods` exempts named methods.
+Design/NestedMethodCalls:
+  Description: 'Checks for method calls nested too deeply in argument positions.'
+  Enabled: true
+  VersionAdded: '0.4'
+  Max: 1
+  AllowedMethods: []
