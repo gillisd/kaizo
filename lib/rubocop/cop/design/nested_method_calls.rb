@@ -91,7 +91,19 @@ module RuboCop
           return false if node.operator_method?
           return false if allowed_method?(node.method_name)
 
-          !node.receiver.nil? || node.arguments.any?
+          does_work?(node)
+        end
+
+        # A call reads as a real nested step -- rather than a plain receiver
+        # chain like `user.account.owner.name` -- only when it, or some call in
+        # its receiver chain, actually takes arguments. Bare reader chains do
+        # not count (that is the planned chaining cop's concern), while
+        # `another("bar").chain` still does.
+        def does_work?(node)
+          return false unless node.call_type?
+          return true if node.arguments.any?
+
+          node.receiver ? does_work?(node.receiver) : false
         end
 
         # Whether `node` sits in an enclosing call's argument list (through
@@ -105,6 +117,11 @@ module RuboCop
             parent.arguments.include?(node)
           when :array, :hash, :pair, :begin, :splat, :kwsplat
             nested_in_call_argument?(parent)
+          when :block, :numblock, :itblock
+            # A call that carries a block is reached through its block node;
+            # treat the block as transparent so the call it is attached to is
+            # still recognised as nested inside any enclosing argument.
+            parent.send_node.equal?(node) && nested_in_call_argument?(parent)
           else
             false
           end

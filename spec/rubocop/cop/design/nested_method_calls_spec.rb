@@ -36,6 +36,11 @@ RSpec.describe RuboCop::Cop::Design::NestedMethodCalls, :config do
     expect_no_offenses('present(user.account.owner.name)')
   end
 
+  it 'does not count a receiver chain argument even at Max: 0' do
+    cop_config['Max'] = 0
+    expect_no_offenses('present(user.account.owner.name)')
+  end
+
   it 'does not count operator or index arguments' do
     expect_no_offenses(<<~RUBY)
       total(price + tax)
@@ -49,6 +54,13 @@ RSpec.describe RuboCop::Cop::Design::NestedMethodCalls, :config do
 
   it 'does not enter block bodies when measuring the outer call' do
     expect_no_offenses('render(items.map { |x| x.to_s })')
+  end
+
+  it 'reports a block-bearing argument call only once' do
+    expect_offense(<<~RUBY)
+      foo(arr.reduce(seed(deep(x))) { })
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Avoid nesting method calls in arguments; name an intermediate result instead. [3/1]
+    RUBY
   end
 
   it 'respects Max' do
