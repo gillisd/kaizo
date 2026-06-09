@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module RuboCop
   module Cop
     module Design
@@ -26,9 +24,9 @@ module RuboCop
       class TotalArguments < Base
         include ArgumentCounting
 
-        exclude_limit 'Max'
+        exclude_limit "Max"
 
-        KIND = 'arguments'
+        KIND = "arguments".freeze
 
         private
 

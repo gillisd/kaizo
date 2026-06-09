@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module RuboCop
   module Cop
     module Design
@@ -22,9 +20,9 @@ module RuboCop
       class KeywordArguments < Base
         include ArgumentCounting
 
-        exclude_limit 'Max'
+        exclude_limit "Max"
 
-        KIND = 'keyword arguments'
+        KIND = "keyword arguments".freeze
 
         private
 

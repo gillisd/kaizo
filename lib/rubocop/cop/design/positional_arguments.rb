@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module RuboCop
   module Cop
     module Design
@@ -22,9 +20,9 @@ module RuboCop
       class PositionalArguments < Base
         include ArgumentCounting
 
-        exclude_limit 'Max'
+        exclude_limit "Max"
 
-        KIND = 'positional arguments'
+        KIND = "positional arguments".freeze
 
         private
 

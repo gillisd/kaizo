@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module RuboCop
   module Cop
     module Design
@@ -14,8 +12,8 @@ module RuboCop
         POSITIONAL_TYPES = %i[arg optarg].freeze
         KEYWORD_TYPES = %i[kwarg kwoptarg].freeze
         DEFINE_METHODS = %i[define_method define_singleton_method].freeze
-        STRUCT_OR_DATA = { 'Struct' => :new, 'Data' => :define }.freeze
-        MSG = 'Method has too many %<kind>s. [%<count>d/%<max>d]'
+        STRUCT_OR_DATA = { "Struct" => :new, "Data" => :define }.freeze
+        MSG = "Method has too many %<kind>s. [%<count>d/%<max>d]".freeze
 
         def on_def(node)
           return if allowed_initialize?(node)
@@ -41,7 +39,7 @@ module RuboCop
         end
 
         def check_arity(node)
-          max = cop_config['Max']
+          max = cop_config["Max"]
           count = arity(node.arguments)
           return unless max && count > max
 
