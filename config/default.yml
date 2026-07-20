@@ -126,8 +126,9 @@ Design/SpecComment:
 # body attaches a `rescue` or `ensure` directly to the `def` (an "implicit
 # begin"). Modifier `rescue` (`foo rescue nil`) and endless method definitions
 # are never flagged. Autocorrection wraps the body in `begin`/`end`, but is
-# skipped for single-line definitions and bodies holding heredocs or other
-# multiline string literals, where re-indenting could change string contents.
+# skipped when the body does not sit on its own lines between `def` and `end`,
+# or holds a heredoc or other multiline string, symbol, or regexp literal, where
+# re-indenting could change their contents.
 Design/ExplicitBegin:
   Description: 'Require an explicit `begin` block when a method body uses `rescue` or `ensure`.'
   Enabled: true

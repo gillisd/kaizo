@@ -312,9 +312,10 @@ end
 Modifier rescues (`foo rescue nil`) and endless method definitions are not
 flagged. Unlike the other cops, this one **does autocorrect** (`rubocop -a`) —
 wrapping a body in `begin`/`end` is a mechanical fix, not a design decision. The
-correction is skipped only for single-line definitions and for bodies containing
-heredocs or other multiline string literals, where re-indenting could change
-string contents.
+correction is skipped when the body does not sit on its own lines between `def`
+and `end` (a single-line definition, say), or contains a heredoc or other
+multiline string, symbol, or regexp literal, where re-indenting could change
+their contents.
 
 Because `Style/RedundantBegin` enforces the exact opposite style, loading this
 plugin **disables it** by default — otherwise the two autocorrections would loop

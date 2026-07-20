@@ -16,9 +16,11 @@ module RuboCop
       # definitions are not flagged.
       #
       # @safety
-      #   Autocorrection is skipped for single-line method definitions and
-      #   for bodies containing heredocs or other multiline string literals,
-      #   because re-indenting those lines could change string contents.
+      #   Autocorrection is skipped when the body does not sit on its own lines
+      #   between `def` and `end` (a single-line definition, for example), and
+      #   for bodies containing heredocs or other multiline string, symbol, or
+      #   regexp literals, because re-indenting those lines could change their
+      #   contents.
       #
       # @example
       #   # bad
