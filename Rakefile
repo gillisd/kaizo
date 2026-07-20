@@ -1,4 +1,4 @@
-require 'rake/clean'
+require "rake/clean"
 require "bundler/gem_tasks"
 require "rspec/core/rake_task"
 require "rubocop/rake_task"
@@ -20,8 +20,8 @@ def in_root_dir(&)
   chdir(Bundler.root, &)
 end
 
-def gemvault(*,**)
-  sh 'gemvault', *, **
+def gemvault(*, **)
+  sh "gemvault", *, **
 end
 
 RSpec::Core::RakeTask.new(:spec) do |spec|
@@ -29,7 +29,7 @@ RSpec::Core::RakeTask.new(:spec) do |spec|
 end
 
 RuboCop::RakeTask.new
-CLOBBER.include 'dist'
+CLOBBER.include "dist"
 
 desc "Generate a new cop with a template"
 task :new_cop, [:cop] do |_task, args|
