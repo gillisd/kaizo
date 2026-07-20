@@ -124,6 +124,10 @@ parameter list. `rubocop-design` is more granular: it bounds positional and
 keyword arguments separately (and together), and is framed around domain
 modeling rather than method complexity. Use whichever fits; they can coexist.
 
+For the full rationale — why the counting is implemented here rather than reusing
+or configuring `Metrics/ParameterLists`, with reproducible evidence — see
+[docs/why-not-metrics-parameterlists.md](docs/why-not-metrics-parameterlists.md).
+
 ## Known limitations
 
 - **The proc/lambda form of `define_method` is not inspected.** Only the block
