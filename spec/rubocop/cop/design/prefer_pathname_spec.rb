@@ -44,6 +44,12 @@ RSpec.describe RuboCop::Cop::Design::PreferPathname, :config do
         File.new(path)
       RUBY
     end
+
+    it "does not register an offense for `File.path` (Pathname#path is protected)" do
+      expect_no_offenses(<<~RUBY)
+        File.path(obj)
+      RUBY
+    end
   end
 
   context "with a matching method on a different receiver" do

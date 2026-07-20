@@ -30,15 +30,17 @@ module RuboCop
         MSG = "Use `Pathname#%<method>s` instead of `File.%<method>s`.".freeze
 
         # `File` class methods that have a `Pathname` instance-method equivalent:
-        # the intersection of File's class methods and Pathname's own instance
-        # methods, excluding generic Object methods. Regenerate with:
-        #   (Pathname.instance_methods(false) & File.methods).reject { |m| Object.respond_to?(m) }.sort
+        # the intersection of File's class methods and Pathname's own public
+        # instance methods, excluding generic Object methods. `public_` matters:
+        # `Pathname#path` is protected, so `File.path` must not be suggested.
+        # Regenerate with:
+        #   (Pathname.public_instance_methods(false) & File.methods).reject { |m| Object.respond_to?(m) }.sort
         RESTRICT_ON_SEND = %i[
           atime basename binread binwrite birthtime blockdev? chardev? chmod
           chown ctime delete directory? dirname empty? executable?
           executable_real? exist? expand_path extname file? fnmatch fnmatch?
           ftype grpowned? join lchmod lchown lstat lutime mtime open owned?
-          path pipe? read readable? readable_real? readlines readlink
+          pipe? read readable? readable_real? readlines readlink
           realdirpath realpath rename setgid? setuid? size size? socket? split
           stat sticky? symlink? sysopen truncate unlink utime world_readable?
           world_writable? writable? writable_real? write zero?
