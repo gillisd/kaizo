@@ -1,7 +1,7 @@
 require "bundler/gem_tasks"
 require "rspec/core/rake_task"
 require "rubocop/rake_task"
-require 'open3'
+require "open3"
 
 def gemvault_contains?(gemvault_file, gem)
   response, status = Open3.capture2e("gemvault", "list", gemvault_file)
@@ -61,7 +61,7 @@ namespace :release do
   task vault: ["dist/vault.gemv", :build] do
     FileList["pkg/*.gem"].each do |v|
       in_root_dir do
-        sh "gemvault", "add", "dist/vault.gemv", v unless gemvault_contains? "dist/vault.gemv", v
+        sh "bundle", "exec", "gemvault", "add", "dist/vault.gemv", v unless gemvault_contains? "dist/vault.gemv", v
       end
     end
   end
