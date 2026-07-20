@@ -300,7 +300,8 @@ dir.join(name)
 ```
 
 The banned set is the intersection of `File`'s class methods and `Pathname`'s own
-instance methods (so `File.new`, which `Pathname` does not mirror, is left alone).
+public instance methods (so `File.new`, and `File.path` whose `Pathname#path`
+equivalent is protected, are left alone).
 The cop runs on `**/*.rb` and skips `exe/**/*` and `bin/**/*` by default —
 executables often work with raw path strings — which you can adjust with the
 standard `Include`/`Exclude` options:
@@ -312,6 +313,13 @@ Design/PreferPathname:
     - 'bin/**/*'
     - 'db/**/*'      # add your own
 ```
+
+Because the ban is broad, a few equivalents are not drop-in replacements:
+`Pathname#join` treats an absolute segment as a reset (`Pathname("a").join("/b")`
+is `/b`, where `File.join("a", "/b")` is `a/b`), `Pathname#chmod`/`chown`/`utime`
+act on the single receiver (where `File.chmod` is variadic over many paths), and
+`Pathname#split`/`rename` differ in return type and arity. The cop only points;
+mind those differences when you rewrite — part of why it does not autocorrect.
 
 As with most of the cops here, there is **no autocorrection** — rewriting
 `File.read(path)` as `Pathname(path).read` changes the receiver and is a call for
