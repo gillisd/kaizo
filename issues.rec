@@ -9,3 +9,9 @@
 %type: Updated date
 %auto: Id Updated
 %mandatory: Title Desc Status
+
+Id: 0
+Updated: Mon, 20 Jul 2026 16:48:17 +0000
+Title: Explain why this isn't using Metrics/ParameterLists that is built into the core rubocop
+Desc: This is being manually implemented? Is there a reason? Deep dive into this, and put your answer in a doc
+Status: closed
