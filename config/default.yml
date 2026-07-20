@@ -124,8 +124,9 @@ Design/SpecComment:
 
 # `Design/FileUtilsInclusion` requires `FileUtils` to be mixed in with `include`
 # or `extend` once it is used more than once in a class or module, instead of
-# repeating the `FileUtils.` receiver. A single qualified call is left alone;
-# nested classes/modules are counted on their own. No autocorrection.
+# repeating the `FileUtils.` receiver. The namespace is reported once. A single
+# qualified call, and a namespace that already mixes `FileUtils` in, are left
+# alone; nested classes/modules are counted on their own. No autocorrection.
 Design/FileUtilsInclusion:
   Description: 'Include or extend FileUtils instead of repeatedly qualifying its methods.'
   Enabled: true

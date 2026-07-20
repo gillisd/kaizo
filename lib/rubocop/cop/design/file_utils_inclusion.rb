@@ -8,10 +8,13 @@ module RuboCop
       # Repeating the `FileUtils.` receiver is noise; mixing the module in once
       # names the capability and lets the body call `mkdir_p`, `cp`, and friends
       # directly. Use `include` for instance-level use and `extend` for
-      # class/singleton-level use. A single qualified call is left alone.
+      # class/singleton-level use. A single qualified call is left alone, and a
+      # class or module that already mixes `FileUtils` in is not flagged.
       #
-      # Nested classes and modules are counted on their own, so one call in an
-      # outer class and one in a nested class do not add up.
+      # The class or module is reported once. Nested classes and modules are
+      # counted on their own -- one call in an outer class and one in a nested
+      # class do not add up -- and a `FileUtils` call in the superclass
+      # expression does not count toward the class body.
       #
       # There is no autocorrection: whether to `include` or `extend`, and where
       # the mixin belongs, is a judgment call for a human.
@@ -44,6 +47,11 @@ module RuboCop
           (send (const {nil? cbase} :FileUtils) ...)
         PATTERN
 
+        # @!method file_utils_mixin?(node)
+        def_node_matcher :file_utils_mixin?, <<~PATTERN
+          (send nil? {:include :extend} (const {nil? cbase} :FileUtils) ...)
+        PATTERN
+
         def on_class(node)
           check(node, "class")
         end
@@ -55,19 +63,23 @@ module RuboCop
         private
 
         def check(node, scope)
-          calls = file_utils_calls(node)
-          return if calls.size < 2
+          return if own_sends(node) { |send| file_utils_mixin?(send) }.any?
 
-          message = format(MSG, count: calls.size, scope: scope)
-          calls.each { |call| add_offense(call.receiver, message: message) }
+          count = own_sends(node) { |send| file_utils_call?(send) }.size
+          return if count < 2
+
+          add_offense(node.loc.name, message: format(MSG, count: count, scope: scope))
         end
 
-        # `FileUtils.` calls whose nearest enclosing namespace is `namespace`
-        # itself -- calls inside a nested class or module belong to that nested
-        # scope, which gets checked on its own.
-        def file_utils_calls(namespace)
-          namespace.each_descendant(:send).select do |node|
-            file_utils_call?(node) && owning_namespace(node).equal?(namespace)
+        # Sends in `namespace`'s own body that match the block -- not its
+        # superclass expression, and not a nested class or module (those own
+        # their sends and are checked on their own).
+        def own_sends(namespace)
+          body = namespace.body
+          return [] unless body
+
+          [body, *body.each_descendant].select do |send_node|
+            send_node.send_type? && yield(send_node) && owning_namespace(send_node).equal?(namespace)
           end
         end
 

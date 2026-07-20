@@ -1,13 +1,12 @@
 RSpec.describe RuboCop::Cop::Design::FileUtilsInclusion, :config do
   context "with two `FileUtils` calls in a class" do
-    it "registers an offense on each qualified call" do
+    it "registers a single offense on the class" do
       expect_offense(<<~RUBY)
         class Backup
+              ^^^^^^ `FileUtils` is used 2 times in this class; `include`/`extend` FileUtils and call its methods unqualified.
           def run
             FileUtils.mkdir_p(dir)
-            ^^^^^^^^^ `FileUtils` is used 2 times in this class; `include`/`extend` FileUtils and call its methods unqualified.
             FileUtils.cp(src, dir)
-            ^^^^^^^^^ `FileUtils` is used 2 times in this class; `include`/`extend` FileUtils and call its methods unqualified.
           end
         end
       RUBY
@@ -15,17 +14,16 @@ RSpec.describe RuboCop::Cop::Design::FileUtilsInclusion, :config do
   end
 
   context "with two `FileUtils` calls in a module" do
-    it "registers an offense reported as a module" do
+    it "registers a single offense on the module" do
       expect_offense(<<~RUBY)
         module Helpers
+               ^^^^^^^ `FileUtils` is used 2 times in this module; `include`/`extend` FileUtils and call its methods unqualified.
           def clean
             FileUtils.rm_rf(tmp)
-            ^^^^^^^^^ `FileUtils` is used 2 times in this module; `include`/`extend` FileUtils and call its methods unqualified.
           end
 
           def seed
             FileUtils.touch(flag)
-            ^^^^^^^^^ `FileUtils` is used 2 times in this module; `include`/`extend` FileUtils and call its methods unqualified.
           end
         end
       RUBY
@@ -33,17 +31,16 @@ RSpec.describe RuboCop::Cop::Design::FileUtilsInclusion, :config do
   end
 
   context "with `FileUtils` used in both an instance and a singleton method" do
-    it "counts them together and reports each" do
+    it "counts them together and reports the class once" do
       expect_offense(<<~RUBY)
         class Store
+              ^^^^^ `FileUtils` is used 2 times in this class; `include`/`extend` FileUtils and call its methods unqualified.
           def self.reset
             FileUtils.rm_rf(root)
-            ^^^^^^^^^ `FileUtils` is used 2 times in this class; `include`/`extend` FileUtils and call its methods unqualified.
           end
 
           def write
             FileUtils.mkdir_p(root)
-            ^^^^^^^^^ `FileUtils` is used 2 times in this class; `include`/`extend` FileUtils and call its methods unqualified.
           end
         end
       RUBY
@@ -54,13 +51,11 @@ RSpec.describe RuboCop::Cop::Design::FileUtilsInclusion, :config do
     it "reports the count as three" do
       expect_offense(<<~RUBY)
         class Backup
+              ^^^^^^ `FileUtils` is used 3 times in this class; `include`/`extend` FileUtils and call its methods unqualified.
           def run
             FileUtils.mkdir_p(dir)
-            ^^^^^^^^^ `FileUtils` is used 3 times in this class; `include`/`extend` FileUtils and call its methods unqualified.
             FileUtils.cp(a, dir)
-            ^^^^^^^^^ `FileUtils` is used 3 times in this class; `include`/`extend` FileUtils and call its methods unqualified.
             FileUtils.chmod(0o755, dir)
-            ^^^^^^^^^ `FileUtils` is used 3 times in this class; `include`/`extend` FileUtils and call its methods unqualified.
           end
         end
       RUBY
@@ -68,14 +63,13 @@ RSpec.describe RuboCop::Cop::Design::FileUtilsInclusion, :config do
   end
 
   context "with a fully-qualified `::FileUtils`" do
-    it "counts it and flags the qualified receiver" do
+    it "counts it and reports the class once" do
       expect_offense(<<~RUBY)
         class Backup
+              ^^^^^^ `FileUtils` is used 2 times in this class; `include`/`extend` FileUtils and call its methods unqualified.
           def run
             ::FileUtils.mkdir_p(dir)
-            ^^^^^^^^^^^ `FileUtils` is used 2 times in this class; `include`/`extend` FileUtils and call its methods unqualified.
             ::FileUtils.cp(src, dir)
-            ^^^^^^^^^^^ `FileUtils` is used 2 times in this class; `include`/`extend` FileUtils and call its methods unqualified.
           end
         end
       RUBY
@@ -86,6 +80,48 @@ RSpec.describe RuboCop::Cop::Design::FileUtilsInclusion, :config do
     it "does not register an offense" do
       expect_no_offenses(<<~RUBY)
         class Backup
+          def run
+            FileUtils.mkdir_p(dir)
+          end
+        end
+      RUBY
+    end
+  end
+
+  context "when the class already includes FileUtils" do
+    it "does not register an offense" do
+      expect_no_offenses(<<~RUBY)
+        class Backup
+          include FileUtils
+
+          def run
+            FileUtils.mkdir_p(dir)
+            FileUtils.cp(src, dir)
+          end
+        end
+      RUBY
+    end
+  end
+
+  context "when the class already extends FileUtils" do
+    it "does not register an offense" do
+      expect_no_offenses(<<~RUBY)
+        class Backup
+          extend FileUtils
+
+          def self.run
+            FileUtils.mkdir_p(dir)
+            FileUtils.cp(src, dir)
+          end
+        end
+      RUBY
+    end
+  end
+
+  context "with a `FileUtils` call in the superclass expression" do
+    it "does not count the superclass call toward the class body" do
+      expect_no_offenses(<<~RUBY)
+        class Backup < FileUtils.const_get(:Base)
           def run
             FileUtils.mkdir_p(dir)
           end
@@ -113,15 +149,14 @@ RSpec.describe RuboCop::Cop::Design::FileUtilsInclusion, :config do
   end
 
   context "with two `FileUtils` calls inside a nested class" do
-    it "flags only the nested class that owns them" do
+    it "reports only the nested class that owns them" do
       expect_offense(<<~RUBY)
         class Outer
           class Inner
+                ^^^^^ `FileUtils` is used 2 times in this class; `include`/`extend` FileUtils and call its methods unqualified.
             def run
               FileUtils.mkdir_p(dir)
-              ^^^^^^^^^ `FileUtils` is used 2 times in this class; `include`/`extend` FileUtils and call its methods unqualified.
               FileUtils.cp(src, dir)
-              ^^^^^^^^^ `FileUtils` is used 2 times in this class; `include`/`extend` FileUtils and call its methods unqualified.
             end
           end
         end

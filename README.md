@@ -307,10 +307,12 @@ class Backup
 end
 ```
 
-A single qualified call is left alone, and nested classes and modules are counted
-on their own (one call in an outer class and one in a nested class do not add up).
-As with most of the cops here, there is **no autocorrection** — whether to
-`include` or `extend`, and where the mixin belongs, is a design decision.
+The class or module is reported once. A single qualified call is left alone, a
+namespace that already mixes `FileUtils` in is not flagged, and nested classes
+and modules are counted on their own (one call in an outer class and one in a
+nested class do not add up). As with most of the cops here, there is **no
+autocorrection** — whether to `include` or `extend`, and where the mixin belongs,
+is a design decision.
 
 ## Development
 
