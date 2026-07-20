@@ -1,3 +1,4 @@
+require 'rake/clean'
 require "bundler/gem_tasks"
 require "rspec/core/rake_task"
 require "rubocop/rake_task"
@@ -16,9 +17,11 @@ def gemvault_contains?(gemvault_file, gem)
 end
 
 def in_root_dir(&)
-  Bundler.with_unbundled_env do
-    chdir(Bundler.root, &)
-  end
+  chdir(Bundler.root, &)
+end
+
+def gemvault(*,**)
+  sh 'gemvault', *, **
 end
 
 RSpec::Core::RakeTask.new(:spec) do |spec|
@@ -26,6 +29,7 @@ RSpec::Core::RakeTask.new(:spec) do |spec|
 end
 
 RuboCop::RakeTask.new
+CLOBBER.include 'dist'
 
 desc "Generate a new cop with a template"
 task :new_cop, [:cop] do |_task, args|
@@ -51,7 +55,7 @@ end
 
 file "dist/vault.gemv" => "dist" do
   in_root_dir do
-    sh "gemvault new dist/vault.gemv"
+    gemvault "new", "dist/vault.gemv"
   end
 end
 
@@ -61,7 +65,7 @@ namespace :release do
   task vault: ["dist/vault.gemv", :build] do
     FileList["pkg/*.gem"].each do |v|
       in_root_dir do
-        sh "bundle", "exec", "gemvault", "add", "dist/vault.gemv", v unless gemvault_contains? "dist/vault.gemv", v
+        gemvault "add", "dist/vault.gemv", v unless gemvault_contains? "dist/vault.gemv", v
       end
     end
   end
