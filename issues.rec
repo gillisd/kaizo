@@ -17,13 +17,13 @@ Desc: This is being manually implemented? Is there a reason? Deep dive into this
 Status: closed
 
 Id: 1
-Updated: Mon, 20 Jul 2026 18:56:36 +0000
+Updated: Mon, 20 Jul 2026 19:55:34 +0000
 Title: Add a cop requiring FileUtils to be included or extended when used more than once in a class or module
 Desc: FileUtils should be included (or extended) as a module when used more than once in a given class or module. Two or more qualified FileUtils.method calls should be flagged, with a suggestion to include FileUtils (instance-level use) or extend FileUtils (class/singleton-level use) and call the methods unqualified; a single call is fine. Decide whether to autocorrect or report only.
-Status: open
+Status: in_progress
 
 Id: 2
-Updated: Mon, 20 Jul 2026 18:56:36 +0000
+Updated: Mon, 20 Jul 2026 19:55:34 +0000
 Title: Add a PreferPathname cop banning File methods that are also present on Pathname in *.rb files
 Desc: Ban all methods on File that are also present on Pathname, inside *.rb files (prefer Pathname, e.g. File.exist?(p) over the File form). These methods are allowed in exe/* and bin/* by default. Compute the banned set as the intersection of File methods and Pathname methods, or keep a curated list. Call the cop PreferPathname or similar. Note: per-cop Include/Exclude is standard RuboCop behavior, so ship a default Include of **/*.rb plus a default Exclude of exe/**/* and bin/**/*, and let users override.
-Status: open
+Status: in_progress
