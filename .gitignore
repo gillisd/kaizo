@@ -10,7 +10,8 @@
 # A library gem resolves dependencies against its host application, so the
 # lockfile is intentionally not committed.
 /Gemfile.lock
-
 # Build artifacts and RSpec's persisted example status.
 *.gem
 .rspec_status
+dist
+references
