@@ -121,3 +121,35 @@ Design/SpecComment:
   Include:
     - '**/*_spec.rb'
   AllowedPatterns: []
+
+# `Design/SpecDescriptionProse` requires RSpec `it`/`context` descriptions to
+# read as one-behavior prose: no commas, conjunctions (`Conjunctions`), or code
+# in an `it` description; `context` descriptions carry no code and open with a
+# `ContextPrefixes` word. `describe` strings are exempt. No autocorrection.
+Design/SpecDescriptionProse:
+  Description: 'Require RSpec it/context descriptions to read as one-behavior prose.'
+  Enabled: true
+  VersionAdded: '0.7'
+  Include:
+    - '**/*_spec.rb'
+  Conjunctions:
+    - and
+    - but
+    - or
+    - nor
+    - so
+    - yet
+    - when
+    - whenever
+    - if
+    - unless
+    - while
+    - until
+    - because
+    - although
+    - though
+  ContextPrefixes:
+    - when
+    - with
+    - without
+    - after
