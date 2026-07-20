@@ -121,3 +121,12 @@ Design/SpecComment:
   Include:
     - '**/*_spec.rb'
   AllowedPatterns: []
+
+# `Design/FileUtilsInclusion` requires `FileUtils` to be mixed in with `include`
+# or `extend` once it is used more than once in a class or module, instead of
+# repeating the `FileUtils.` receiver. A single qualified call is left alone;
+# nested classes/modules are counted on their own. No autocorrection.
+Design/FileUtilsInclusion:
+  Description: 'Include or extend FileUtils instead of repeatedly qualifying its methods.'
+  Enabled: true
+  VersionAdded: '0.7'

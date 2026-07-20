@@ -47,7 +47,9 @@ flags classes named after what they *do* (see [Class naming](#class-naming)),
 **`Design/NestedMethodCalls`**, which flags calls buried too deeply in other
 calls' arguments (see [Nested method calls](#nested-method-calls)), and
 **`Design/SpecComment`**, which flags comments in spec files (see
-[Comments in specs](#comments-in-specs)).
+[Comments in specs](#comments-in-specs)), and **`Design/FileUtilsInclusion`**,
+which asks you to `include`/`extend` `FileUtils` once its methods are used more
+than once (see [Including FileUtils](#including-fileutils)).
 
 ## Installation
 
@@ -277,6 +279,38 @@ Design/SpecComment:
     - '\A#\s*@rbs'       # rbs-inline type annotations
     - 'noqa'
 ```
+
+## Including FileUtils
+
+`Design/FileUtilsInclusion` flags repeated qualified `FileUtils.` calls within a
+class or module: once you reach for `FileUtils` more than once, `include` it (for
+instance-level use) or `extend` it (for class/singleton-level use) and call its
+methods unqualified.
+
+```ruby
+# bad
+class Backup
+  def run
+    FileUtils.mkdir_p(dir)
+    FileUtils.cp(src, dir)
+  end
+end
+
+# good
+class Backup
+  include FileUtils
+
+  def run
+    mkdir_p(dir)
+    cp(src, dir)
+  end
+end
+```
+
+A single qualified call is left alone, and nested classes and modules are counted
+on their own (one call in an outer class and one in a nested class do not add up).
+As with most of the cops here, there is **no autocorrection** — whether to
+`include` or `extend`, and where the mixin belongs, is a design decision.
 
 ## Development
 
