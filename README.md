@@ -47,7 +47,9 @@ flags classes named after what they *do* (see [Class naming](#class-naming)),
 **`Design/NestedMethodCalls`**, which flags calls buried too deeply in other
 calls' arguments (see [Nested method calls](#nested-method-calls)), and
 **`Design/SpecComment`**, which flags comments in spec files (see
-[Comments in specs](#comments-in-specs)).
+[Comments in specs](#comments-in-specs)), and **`Design/SpecDescriptionProse`**,
+which requires `it`/`context` descriptions to read as one-behavior prose (see
+[Spec description prose](#spec-description-prose)).
 
 ## Installation
 
@@ -277,6 +279,51 @@ Design/SpecComment:
     - '\A#\s*@rbs'       # rbs-inline type annotations
     - 'noqa'
 ```
+
+## Spec description prose
+
+`Design/SpecDescriptionProse` requires RSpec `it`/`context` descriptions to read
+as one-behavior prose specifications. Every rule is **structural** — it fires
+only when the wording signals that one example is really more than one, or that
+the assertion is leaking into the name.
+
+An `it`/`specify`/`example` description must not contain:
+
+- a **comma** — a list is several behaviors;
+- a **conjunction** (`and`, `or`, `so`, `when`, `if`, `unless`, … — the
+  `Conjunctions` list) — joined clauses are separate examples, and a condition
+  belongs in a `context`;
+- **code** — `_ : # = { } ! [ ]`, a backtick, or a nested quoted literal;
+  a description is prose, not identifiers or wire values.
+
+A `context` description must not contain code, and must open with a word from
+`ContextPrefixes` (`when`/`with`/`without`/`after`). `describe` strings name the
+unit under test and are exempt.
+
+```ruby
+# bad
+it "renders the name, image, and flag"
+it "omits the key when the role is unset"
+it "renders the :cpu member"
+context "the role is unset" do
+end
+
+# good
+it "renders the name"
+it "renders the cpu member"
+context "when the role is unset" do
+  it "omits the key"
+end
+```
+
+The defaults are deliberately curated, not exhaustive: `for` is dropped from the
+conjunctions (it is a preposition in nearly every description), and homographs
+like `even`/`given`/`regardless` are left out (they collide with `even numbers`
+and the like) — add them via `Conjunctions` if you want them. Pure **wording**
+preferences that don't change structure (e.g. `should` vs a present-tense verb)
+are out of scope — rubocop-rspec's `RSpec/ExampleWording` already covers those.
+There is no autocorrection: splitting an example, or extracting a condition into
+a `context`, is a modelling decision for a human.
 
 ## Development
 
