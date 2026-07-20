@@ -121,3 +121,17 @@ Design/SpecComment:
   Include:
     - '**/*_spec.rb'
   AllowedPatterns: []
+
+# `Design/PreferPathname` flags calls to `File` class methods that have a
+# `Pathname` instance-method equivalent (`File.read`, `File.exist?`, `File.join`,
+# ...), preferring `Pathname`. Runs on `**/*.rb`; `exe/**/*` and `bin/**/*` are
+# exempt by default (override with the standard Include/Exclude). No autocorrection.
+Design/PreferPathname:
+  Description: 'Prefer Pathname over File for methods Pathname provides.'
+  Enabled: true
+  VersionAdded: '0.7'
+  Include:
+    - '**/*.rb'
+  Exclude:
+    - 'exe/**/*'
+    - 'bin/**/*'

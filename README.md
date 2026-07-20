@@ -47,7 +47,9 @@ flags classes named after what they *do* (see [Class naming](#class-naming)),
 **`Design/NestedMethodCalls`**, which flags calls buried too deeply in other
 calls' arguments (see [Nested method calls](#nested-method-calls)), and
 **`Design/SpecComment`**, which flags comments in spec files (see
-[Comments in specs](#comments-in-specs)).
+[Comments in specs](#comments-in-specs)), and **`Design/PreferPathname`**, which
+prefers `Pathname` over `File` for the operations `Pathname` provides (see
+[Prefer Pathname](#prefer-pathname)).
 
 ## Installation
 
@@ -277,6 +279,43 @@ Design/SpecComment:
     - '\A#\s*@rbs'       # rbs-inline type annotations
     - 'noqa'
 ```
+
+## Prefer Pathname
+
+`Design/PreferPathname` flags calls to `File` class methods that have a `Pathname`
+instance-method equivalent — `File.read`, `File.exist?`, `File.join`,
+`File.expand_path`, and the like. Once a path is a `Pathname`, calling the method
+on it reads better than threading a string through `File`.
+
+```ruby
+# bad
+File.read(path)
+File.exist?(path)
+File.join(dir, name)
+
+# good
+path.read
+path.exist?
+dir.join(name)
+```
+
+The banned set is the intersection of `File`'s class methods and `Pathname`'s own
+instance methods (so `File.new`, which `Pathname` does not mirror, is left alone).
+The cop runs on `**/*.rb` and skips `exe/**/*` and `bin/**/*` by default —
+executables often work with raw path strings — which you can adjust with the
+standard `Include`/`Exclude` options:
+
+```yaml
+Design/PreferPathname:
+  Exclude:
+    - 'exe/**/*'
+    - 'bin/**/*'
+    - 'db/**/*'      # add your own
+```
+
+As with most of the cops here, there is **no autocorrection** — rewriting
+`File.read(path)` as `Pathname(path).read` changes the receiver and is a call for
+a human.
 
 ## Development
 
