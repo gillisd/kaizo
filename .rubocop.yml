@@ -5,7 +5,7 @@
 # AI guardrails: rubocop-claude plugin (Claude/ cops)
 # Performance: rubocop-performance (with chain-hostile cops disabled)
 #
-# This gem also dogfoods its own cops (rubocop-design), at relaxed thresholds.
+# This gem also dogfoods its own cops (kaizo), at relaxed thresholds.
 #
 # Philosophy: idiomatic Ruby, pipeline-style chaining, strict for AI agents,
 # readable for humans.
@@ -16,7 +16,7 @@ plugins:
   - rubocop-rspec
   - rubocop-performance
   - rubocop-rake
-  - rubocop-design
+  - kaizo
 
 AllCops:
   NewCops: enable
@@ -26,11 +26,6 @@ AllCops:
     - bin/*
     - vendor/**/*
     - references/**/*
-
-# The hyphenated entry point can't match a constant name.
-Naming/FileName:
-  Exclude:
-    - lib/rubocop-design.rb
 
 # ===========================================================================
 # Overrides from stock — personal style preferences
@@ -116,14 +111,14 @@ Metrics/BlockLength:
     - shared_examples_for
     - shared_context
   Exclude:
-    - "rubocop-design.gemspec"
+    - "kaizo.gemspec"
     - "spec/**/*"
     - "Rakefile"
 
 # The gemspec uses patterns that trigger Claude cops legitimately.
 Claude/NoFancyUnicode:
   Exclude:
-    - "rubocop-design.gemspec"
+    - "kaizo.gemspec"
 
 # Shared test contexts legitimately define many helpers.
 RSpec/MultipleMemoizedHelpers:
@@ -183,22 +178,22 @@ RSpec/ExampleLength:
     - heredoc
 
 # ===========================================================================
-# rubocop-design — dogfood our own cops at practical thresholds
+# kaizo — dogfood our own cops at practical thresholds
 # ===========================================================================
 
 # The shipped defaults (Max: 1) are an intentionally aggressive opinion for
 # application code. The gem's own internal helpers are linted at a more
 # practical threshold rather than modeled into objects just to satisfy them.
-Design/PositionalArguments:
+Kaizo/PositionalArguments:
   Max: 3
-Design/KeywordArguments:
+Kaizo/KeywordArguments:
   Max: 3
-Design/TotalArguments:
+Kaizo/TotalArguments:
   Max: 4
 
 # Our own specs are cop specs: their descriptions necessarily quote code
 # (backticks, method names) and RSpec/Ruby keywords, which is exactly what the
 # spec-prose cop flags. It targets application specs, not a cop gem's fixtures.
-Design/SpecDescriptionProse:
+Kaizo/SpecDescriptionProse:
   Exclude:
     - "spec/**/*"

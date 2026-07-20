@@ -1,6 +1,6 @@
 module RuboCop
   module Cop
-    module Design
+    module Kaizo
       # Requires RSpec `it`/`context` descriptions to read as one-behavior prose
       # specifications, after the spec-skeleton naming law.
       #

@@ -1,4 +1,4 @@
-RSpec.describe RuboCop::Cop::Design::SpecDescriptionProse, :config do
+RSpec.describe RuboCop::Cop::Kaizo::SpecDescriptionProse, :config do
   context "with a comma in an `it` description" do
     it "registers an offense" do
       expect_offense(<<~RUBY)
