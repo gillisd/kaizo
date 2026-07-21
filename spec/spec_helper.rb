@@ -1,4 +1,4 @@
-require "rubocop-design"
+require "kaizo"
 require "rubocop/rspec/support"
 
 RSpec.configure do |config|

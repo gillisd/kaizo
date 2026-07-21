@@ -1,6 +1,6 @@
 module RuboCop
   module Cop
-    module Design
+    module Kaizo
       # Checks for method calls nested too deeply in argument positions.
       #
       # A call whose arguments are themselves the results of other calls --

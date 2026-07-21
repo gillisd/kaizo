@@ -1,4 +1,4 @@
-RSpec.describe RuboCop::Cop::Design::SpecComment, :config do
+RSpec.describe RuboCop::Cop::Kaizo::SpecComment, :config do
   it "registers an offense for a standalone comment" do
     expect_offense(<<~RUBY)
       # set up an admin user

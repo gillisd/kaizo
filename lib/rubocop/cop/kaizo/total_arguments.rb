@@ -1,6 +1,6 @@
 module RuboCop
   module Cop
-    module Design
+    module Kaizo
       # Checks that a method does not declare too many arguments in total
       # (positional plus keyword).
       #
