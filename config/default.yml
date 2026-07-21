@@ -160,7 +160,7 @@ Style/RedundantBegin:
 Kaizo/SpecDescriptionProse:
   Description: 'Require RSpec it/context descriptions to read as one-behavior prose.'
   Enabled: true
-  VersionAdded: '0.7'
+  VersionAdded: '0.6'
   Include:
     - '**/*_spec.rb'
   Conjunctions:
@@ -193,7 +193,7 @@ Kaizo/SpecDescriptionProse:
 Kaizo/FileUtilsInclusion:
   Description: 'Include or extend FileUtils instead of repeatedly qualifying its methods.'
   Enabled: true
-  VersionAdded: '0.7'
+  VersionAdded: '0.6'
 
 # `Kaizo/PreferPathname` flags calls to `File` class methods that have a
 # `Pathname` instance-method equivalent (`File.read`, `File.exist?`, `File.join`,
@@ -202,7 +202,7 @@ Kaizo/FileUtilsInclusion:
 Kaizo/PreferPathname:
   Description: 'Prefer Pathname over File for methods Pathname provides.'
   Enabled: true
-  VersionAdded: '0.7'
+  VersionAdded: '0.6'
   Include:
     - '**/*.rb'
   Exclude:

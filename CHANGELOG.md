@@ -8,6 +8,21 @@
   and so on for every cop. This is a pure rename — no cop logic, thresholds, or
   messages changed. Update your `Gemfile` (`gem 'kaizo'`), your `.rubocop.yml`
   `plugins:` entry (`- kaizo`), and any cop names in your configuration.
+- Add `Kaizo/SpecDescriptionProse` cop: requires RSpec `it`/`context`
+  descriptions to read as one-behavior prose. An `it` description may not contain
+  a comma, a conjunction (`Conjunctions`), or code; a `context` description
+  carries no code and must open with a `ContextPrefixes` word. `describe` strings
+  are exempt. No autocorrection. Enabled by default.
+- Add `Kaizo/FileUtilsInclusion` cop: requires `FileUtils` to be mixed in with
+  `include`/`extend` once it is used more than once in a class or module, instead
+  of repeating the `FileUtils.` receiver. A single qualified call, and a
+  namespace that already mixes it in, are left alone; nested classes/modules are
+  counted on their own. No autocorrection. Enabled by default.
+- Add `Kaizo/PreferPathname` cop: flags calls to `File` class methods that have a
+  `Pathname` instance-method equivalent (`File.read`, `File.exist?`, `File.join`,
+  ...), preferring `Pathname`. Runs on `**/*.rb`; `exe/**/*` and `bin/**/*` are
+  exempt by default (override with the standard `Include`/`Exclude`). No
+  autocorrection. Enabled by default.
 - Add `Kaizo/ExplicitBegin` cop: requires an explicit `begin`/`end` block when
   a method body attaches a `rescue` or `ensure` directly to the `def` (an
   "implicit begin") -- the inverse of `Style/RedundantBegin`. Modifier `rescue`
