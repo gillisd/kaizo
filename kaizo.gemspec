@@ -3,7 +3,7 @@ require_relative "lib/kaizo/version"
 Gem::Specification.new do |spec|
   spec.name = "kaizo"
   spec.version = Kaizo::VERSION
-  spec.authors = ["Flipmine"]
+  spec.authors = ["David Gillis"]
   spec.email = ["david@flipmine.com"]
 
   spec.summary = "A strict, punishing set of RuboCop design cops for AI-agent-authored Ruby."
