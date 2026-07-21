@@ -1,6 +1,6 @@
 module RuboCop
   module Cop
-    module Design
+    module Kaizo
       # Checks for classes named as agent nouns ("doers") rather than the domain
       # concepts they model. A class whose name ends in `er` or `or` (`Manager`,
       # `Processor`, `Handler`) -- or in any configured `ForbiddenSuffixes` such

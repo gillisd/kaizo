@@ -1,6 +1,6 @@
 module RuboCop
   module Cop
-    module Design
+    module Kaizo
       # Flags `next` used inside the block of a value-returning `Enumerable`
       # method such as `map`, `select`, or `reduce`, whose block value is
       # significant. In those methods `next` doubles as a way to produce the

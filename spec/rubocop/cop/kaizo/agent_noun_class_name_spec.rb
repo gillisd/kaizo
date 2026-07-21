@@ -1,4 +1,4 @@
-RSpec.describe RuboCop::Cop::Design::AgentNounClassName, :config do
+RSpec.describe RuboCop::Cop::Kaizo::AgentNounClassName, :config do
   let(:cop_config) do
     {
       "AllowedSuffixes" => %w[Controller Router Parser User Order],

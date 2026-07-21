@@ -1,10 +1,10 @@
 module RuboCop
   module Cop
-    module Design
+    module Kaizo
       # Requires an explicit `begin`...`end` block when a method body has a
       # `rescue` or `ensure` clause, instead of attaching the clause directly
       # to the method definition (an "implicit begin"). This is the inverse
-      # of `Style/RedundantBegin`, which rubocop-design's default configuration
+      # of `Style/RedundantBegin`, which kaizo's default configuration
       # disables so the two cops do not fight each other.
       #
       # An explicit `begin` names the unit of work being guarded, keeps the

@@ -1,4 +1,4 @@
-RSpec.describe RuboCop::Cop::Design::ExplicitBegin, :config do
+RSpec.describe RuboCop::Cop::Kaizo::ExplicitBegin, :config do
   context "with an `ensure` clause attached directly to `def`" do
     it "registers an offense and wraps the body in an explicit begin" do
       expect_offense(<<~RUBY)

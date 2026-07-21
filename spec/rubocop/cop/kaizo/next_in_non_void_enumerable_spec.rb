@@ -1,4 +1,4 @@
-RSpec.describe RuboCop::Cop::Design::NextInNonVoidEnumerable, :config do
+RSpec.describe RuboCop::Cop::Kaizo::NextInNonVoidEnumerable, :config do
   context "with a bare `next` guard inside `map`" do
     it "registers an offense" do
       expect_offense(<<~RUBY)
