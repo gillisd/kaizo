@@ -1,4 +1,4 @@
-RSpec.describe RuboCop::Cop::Design::FileUtilsInclusion, :config do
+RSpec.describe RuboCop::Cop::Kaizo::FileUtilsInclusion, :config do
   context "with two `FileUtils` calls in a class" do
     it "registers a single offense on the class" do
       expect_offense(<<~RUBY)

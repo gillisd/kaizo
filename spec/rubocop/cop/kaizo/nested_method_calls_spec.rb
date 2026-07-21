@@ -1,4 +1,4 @@
-RSpec.describe RuboCop::Cop::Design::NestedMethodCalls, :config do
+RSpec.describe RuboCop::Cop::Kaizo::NestedMethodCalls, :config do
   let(:cop_config) { { "Max" => 1, "AllowedMethods" => [] } }
 
   it "registers one offense for the canonical nested example" do

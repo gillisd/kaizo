@@ -1,6 +1,6 @@
 module RuboCop
   module Cop
-    module Design
+    module Kaizo
       # Shared traversal and counting for the argument-arity cops.
       #
       # Walks method definitions written with `def`, `def self.`, `define_method`,

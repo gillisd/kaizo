@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-# Specify your gem's dependencies in rubocop-design.gemspec
+# Specify your gem's dependencies in kaizo.gemspec
 gemspec
 
 gem "gemvault"

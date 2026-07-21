@@ -17,29 +17,13 @@ Desc: This is being manually implemented? Is there a reason? Deep dive into this
 Status: closed
 
 Id: 1
-Updated: Mon, 20 Jul 2026 18:56:36 +0000
+Updated: Mon, 20 Jul 2026 19:55:34 +0000
 Title: Add a cop requiring FileUtils to be included or extended when used more than once in a class or module
 Desc: FileUtils should be included (or extended) as a module when used more than once in a given class or module. Two or more qualified FileUtils.method calls should be flagged, with a suggestion to include FileUtils (instance-level use) or extend FileUtils (class/singleton-level use) and call the methods unqualified; a single call is fine. Decide whether to autocorrect or report only.
-Status: open
+Status: in_progress
 
 Id: 2
-Updated: Mon, 20 Jul 2026 18:56:36 +0000
+Updated: Mon, 20 Jul 2026 19:55:34 +0000
 Title: Add a PreferPathname cop banning File methods that are also present on Pathname in *.rb files
 Desc: Ban all methods on File that are also present on Pathname, inside *.rb files (prefer Pathname, e.g. File.exist?(p) over the File form). These methods are allowed in exe/* and bin/* by default. Compute the banned set as the intersection of File methods and Pathname methods, or keep a curated list. Call the cop PreferPathname or similar. Note: per-cop Include/Exclude is standard RuboCop behavior, so ship a default Include of **/*.rb plus a default Exclude of exe/**/* and bin/**/*, and let users override.
-Status: open
-
-Id: 3
-Updated: Mon, 20 Jul 2026 16:56:18 -0400
-Title: RSpec prose cop
-Desc: 
-+ A. RSpec "it" examples should:
-+   1. never contain a comma
-+   2. never contain a conjunction (and, or, so)
-+   3. If either #1 or #2 is TRUE, example should (either) be:
-+     - split into more than 1 example
-+     - split into more than 1 example example(s) and context block(s)
-+   4. never contain "when", "but", "yet" or other conditional prepositions/conjunctions
-+     - If 4 is TRUE, depedendent clause/prepositional phrases should be extracted into contexts blocks
-+ B. Methods in "spec" files, and spec helper methods (look in spec/support) should:
-+   1. never contain a conjunction or preposition. This is a smell indicating the method is doing too much, and whatever it is creating/doing should be done through multiple methods via composition 
-Status: open
+Status: in_progress

@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+- **Renamed the gem from `rubocop-design` to `kaizo`**, and moved every cop from
+  the `Design/` department into `Kaizo/`: `Design/PositionalArguments` is now
+  `Kaizo/PositionalArguments`, `Design/SpecComment` is now `Kaizo/SpecComment`,
+  and so on for every cop. This is a pure rename — no cop logic, thresholds, or
+  messages changed. Update your `Gemfile` (`gem 'kaizo'`), your `.rubocop.yml`
+  `plugins:` entry (`- kaizo`), and any cop names in your configuration.
+
 ## 0.5.0
 
 - Add `Design/SpecComment` cop: flags comments in spec files (`**/*_spec.rb`),

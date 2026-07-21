@@ -1,6 +1,6 @@
 module RuboCop
   module Cop
-    module Design
+    module Kaizo
       # Requires `FileUtils` to be mixed in with `include` (or `extend`) once it
       # is used more than once in a class or module, rather than qualifying every
       # call with the `FileUtils.` receiver.
