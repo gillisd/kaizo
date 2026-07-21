@@ -27,3 +27,27 @@ Updated: Mon, 20 Jul 2026 19:55:34 +0000
 Title: Add a PreferPathname cop banning File methods that are also present on Pathname in *.rb files
 Desc: Ban all methods on File that are also present on Pathname, inside *.rb files (prefer Pathname, e.g. File.exist?(p) over the File form). These methods are allowed in exe/* and bin/* by default. Compute the banned set as the intersection of File methods and Pathname methods, or keep a curated list. Call the cop PreferPathname or similar. Note: per-cop Include/Exclude is standard RuboCop behavior, so ship a default Include of **/*.rb plus a default Exclude of exe/**/* and bin/**/*, and let users override.
 Status: in_progress
+
+Id: 3
+Updated: Tue, 21 Jul 2026 01:40:10 +0000
+Title: Kaizo/PreferPathname: verify File.write -> Pathname#write is a true equivalent
+Desc: The cop flags File.write and suggests Pathname#write; confirm they are actually equivalent (nuances between the two have bitten before). Verified on Ruby 4.0.1: Pathname#write is a transparent builtin delegation to File.write(path, *args, **opts) -- the bytes-written return value, default truncation, a non-nil offset (seek without truncating), mode:/append, and encoding: all behave identically, for both write and binwrite. The only difference is argument shape: File.write(p, s, off, **o) takes the path first, so a rewrite moves it onto the receiver -- Pathname(p).write(s, off, **o). Conclusion: write/binwrite are safe in the banned set; optionally add a README note. (Pathname#join/chmod/split etc. genuinely differ and are already documented.)
+Status: open
+
+Id: 4
+Updated: Tue, 21 Jul 2026 01:40:10 +0000
+Title: Kaizo/NestedMethodCalls: reword message to stress *properly* naming the intermediate result
+Desc: Current MSG is "Avoid nesting method calls in arguments; name an intermediate result instead." Merely naming the intermediate result is not the point -- giving it a descriptive, self-documenting name is. Reword the MSG succinctly to say exactly that, e.g. "Avoid nesting method calls in arguments; name the intermediate result to document what it is." Update the cop MSG, the README, and the expected offense text in the specs.
+Status: open
+
+Id: 5
+Updated: Tue, 21 Jul 2026 01:40:10 +0000
+Title: Kaizo/PositionalArguments: exempt operator and element-assignment methods like []=
+Desc: def []=(key, value) trips Kaizo/PositionalArguments [2/1], but the arity of []= is fixed by Ruby syntax (an index -- or indices -- plus the assigned value) and cannot be modeled away; it is idiomatic, not primitive obsession. Exempt operator methods from the argument-count cops (PositionalArguments and TotalArguments). Confirmed via RuboCop's AST that a def node for []=, [], <=>, +, <<, and == all report node.operator_method? == true (and []=/foo= also report assignment_method? == true), so gating on node.operator_method? cleanly covers []=, [], and the binary operators. Mirror the existing Struct/Data initialize exemption pattern in ArgumentCounting.
+Status: open
+
+Id: 6
+Updated: Tue, 21 Jul 2026 01:40:10 +0000
+Title: Add a cop: a method returning an array should be named as a plural collection (end in 's')
+Desc: Flag a method that returns an array (a collection) but whose name is not plural -- i.e. does not end in 's' -- since a plural name documents that a collection comes back (def users vs a singular name returning an Array is a smell). "Returns an array" must be detected heuristically: array-literal returns ([...] or return [...]), or a trailing expression known to produce an array (map/flat_map/select/reject/to_a/sort and friends). To limit false positives: only flag high-confidence array returns, exempt predicate (?) and writer (=) methods, and add config for irregular plurals (people, children) plus an allowlist. No autocorrection -- renaming is a design decision.
+Status: open
