@@ -49,16 +49,20 @@ smallest set that expresses your rule.
 Beyond argument counts, the gem ships **`Kaizo/AgentNounClassName`**, which
 flags classes named after what they *do* (see [Class naming](#class-naming)),
 **`Kaizo/NestedMethodCalls`**, which flags calls buried too deeply in other
-calls' arguments (see [Nested method calls](#nested-method-calls)), and
+calls' arguments (see [Nested method calls](#nested-method-calls)),
 **`Kaizo/SpecComment`**, which flags comments in spec files (see
 [Comments in specs](#comments-in-specs)), **`Kaizo/SpecDescriptionProse`**,
 which requires `it`/`context` descriptions to read as one-behavior prose (see
 [Spec description prose](#spec-description-prose)),
 **`Kaizo/FileUtilsInclusion`**, which asks you to `include`/`extend` `FileUtils`
 once its methods are used more than once (see
-[Including FileUtils](#including-fileutils)), and **`Kaizo/PreferPathname`**,
-which prefers `Pathname` over `File` for the operations `Pathname` provides (see
-[Prefer Pathname](#prefer-pathname)).
+[Including FileUtils](#including-fileutils)), **`Kaizo/PreferPathname`**, which
+prefers `Pathname` over `File` for the operations `Pathname` provides (see
+[Prefer Pathname](#prefer-pathname)), **`Kaizo/ExplicitBegin`**, which requires
+an explicit `begin` for method bodies that `rescue` or `ensure` (see
+[Explicit begin](#explicit-begin)), and **`Kaizo/NextInNonVoidEnumerable`**,
+which flags `next` used as control-flow-as-value inside `map`/`select`/`reduce`
+blocks (see [Next in value-returning blocks](#next-in-value-returning-blocks)).
 
 ## Installation
 
@@ -415,6 +419,101 @@ mind those differences when you rewrite — part of why it does not autocorrect.
 As with most of the cops here, there is **no autocorrection** — rewriting
 `File.read(path)` as `Pathname(path).read` changes the receiver and is a call for
 a human.
+
+## Explicit begin
+
+`Kaizo/ExplicitBegin` requires an explicit `begin`/`end` block when a method
+body attaches a `rescue` or `ensure` directly to the `def` — Ruby's "implicit
+begin". It is the inverse of core's `Style/RedundantBegin`. An explicit `begin`
+names the guarded region and keeps it bounded: it marks exactly what the
+`rescue`/`ensure` covers, so the method can grow other statements without
+silently widening what is rescued.
+
+```ruby
+# bad
+def foo
+  do_something
+ensure
+  cleanup
+end
+
+# good
+def foo
+  begin
+    do_something
+  ensure
+    cleanup
+  end
+end
+```
+
+Modifier rescues (`foo rescue nil`) and endless method definitions are not
+flagged. Unlike the other cops, this one **does autocorrect** (`rubocop -a`) —
+wrapping a body in `begin`/`end` is a mechanical fix, not a design decision. The
+correction is skipped when the body does not sit on its own lines between `def`
+and `end` (a single-line definition, say), or contains a heredoc or other
+multiline string, symbol, or regexp literal, where re-indenting could change
+their contents.
+
+Because `Style/RedundantBegin` enforces the exact opposite style, loading this
+plugin **disables it** by default — otherwise the two autocorrections would loop
+forever, each undoing the other. Re-enable it explicitly in your `.rubocop.yml`
+if you would rather not require explicit begins:
+
+```yaml
+Style/RedundantBegin:
+  Enabled: true     # opt back out of Kaizo/ExplicitBegin
+```
+
+## Next in value-returning blocks
+
+`Kaizo/NextInNonVoidEnumerable` flags `next` inside the block of a
+value-returning `Enumerable` method — `map`, `select`, `filter_map`, `reduce`,
+`sum`, `group_by`, the `*_by` methods, the `any?`/`all?`/`none?`/`one?`
+predicates, and so on — where `next` is being used as control-flow-as-value.
+
+```ruby
+# bad
+array.map do |item|
+  next if skip?(item)
+  transform(item)
+end
+
+# bad - `next <value>` counts too
+array.reduce(0) do |sum, item|
+  next sum if skip?(item)
+  sum + item
+end
+
+# good - void iteration method; `next` just skips the iteration
+array.each do |item|
+  next if skip?(item)
+  process(item)
+end
+
+# good - say what you mean
+array.filter_map { |item| transform(item) unless skip?(item) }
+```
+
+Only *void* iteration methods — those whose block return value is ignored
+(`each`, `each_with_index`, `each_slice`, `each_with_object`, `reverse_each`,
+`cycle`, …) — are meant to use `next`, which is why they are absent from the
+flagged set. Non-`Enumerable` looping constructs (`loop`, `Integer#times`,
+`while`) are likewise never flagged. A `next` that binds to a nested block or
+loop is attributed to that inner scope, so an inner `each { next }` or
+`while … next … end` does not flag an outer `map`.
+
+As with most of the cops here, there is **no autocorrection** — the right fix
+depends on intent (a guard clause might become a ternary, a `select`/`reject`, a
+`filter_map`, or a restructured block). Exempt specific methods with
+`AllowedMethods` / `AllowedPatterns`:
+
+```yaml
+Kaizo/NextInNonVoidEnumerable:
+  AllowedMethods:
+    - reduce        # allow `next <acc>` guards in reduce/inject
+  AllowedPatterns: []
+```
 
 ## Development
 

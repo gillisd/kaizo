@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.6.0
 
 - **Renamed the gem from `rubocop-design` to `kaizo`**, and moved every cop from
   the `Design/` department into `Kaizo/`: `Design/PositionalArguments` is now
@@ -8,6 +8,24 @@
   and so on for every cop. This is a pure rename — no cop logic, thresholds, or
   messages changed. Update your `Gemfile` (`gem 'kaizo'`), your `.rubocop.yml`
   `plugins:` entry (`- kaizo`), and any cop names in your configuration.
+- Add `Kaizo/ExplicitBegin` cop: requires an explicit `begin`/`end` block when
+  a method body attaches a `rescue` or `ensure` directly to the `def` (an
+  "implicit begin") -- the inverse of `Style/RedundantBegin`. Modifier `rescue`
+  (`foo rescue nil`) and endless method definitions are not flagged.
+  Autocorrection wraps the body in `begin`/`end`, and is skipped only for
+  single-line definitions and bodies holding heredocs or other multiline string
+  literals, where re-indenting could change string contents. Enabled by default.
+- Add `Kaizo/NextInNonVoidEnumerable` cop: flags `next` inside the block of a
+  value-returning `Enumerable` method (`map`, `select`, `reduce`, and friends),
+  where `next` is being used as control-flow-as-value. Void iteration methods
+  (`each`, `each_with_object`, ...) and non-`Enumerable` loops (`loop`, `while`,
+  `Integer#times`) are never flagged, and a `next` bound to a nested block or
+  loop is attributed to that inner scope. Exempt methods with `AllowedMethods` /
+  `AllowedPatterns`. No autocorrection. Enabled by default.
+- Loading the plugin now disables core's `Style/RedundantBegin`, which enforces
+  the opposite style; leaving both on would make their autocorrections loop.
+  Re-enable it explicitly in your `.rubocop.yml` if you do not want
+  `Kaizo/ExplicitBegin`.
 
 ## 0.5.0
 

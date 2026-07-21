@@ -122,6 +122,37 @@ Kaizo/SpecComment:
     - '**/*_spec.rb'
   AllowedPatterns: []
 
+# `Kaizo/ExplicitBegin` requires an explicit `begin`/`end` block when a method
+# body attaches a `rescue` or `ensure` directly to the `def` (an "implicit
+# begin"). Modifier `rescue` (`foo rescue nil`) and endless method definitions
+# are never flagged. Autocorrection wraps the body in `begin`/`end`, but is
+# skipped when the body does not sit on its own lines between `def` and `end`,
+# or holds a heredoc or other multiline string, symbol, or regexp literal, where
+# re-indenting could change their contents.
+Kaizo/ExplicitBegin:
+  Description: 'Require an explicit `begin` block when a method body uses `rescue` or `ensure`.'
+  Enabled: true
+  VersionAdded: '0.6'
+
+# `Kaizo/NextInNonVoidEnumerable` flags `next` inside the block of a
+# value-returning `Enumerable` method (`map`, `select`, `reduce`, ...), where
+# `next` is control-flow-as-value. Void iteration methods (`each`,
+# `each_with_object`, ...) and non-`Enumerable` loops (`loop`, `while`) are never
+# flagged; a `next` bound to a nested block or loop is attributed to that inner
+# scope. `AllowedMethods`/`AllowedPatterns` exempt named methods. No autocorrection.
+Kaizo/NextInNonVoidEnumerable:
+  Description: 'Avoid `next` in the block of a value-returning `Enumerable` method.'
+  Enabled: true
+  VersionAdded: '0.6'
+  AllowedMethods: []
+  AllowedPatterns: []
+
+# `Style/RedundantBegin` enforces the exact opposite of `Kaizo/ExplicitBegin`
+# (and its autocorrection would fight ours -- the two would loop forever), so
+# loading this plugin disables it. Re-enable it explicitly in your own
+# `.rubocop.yml` at your peril.
+Style/RedundantBegin:
+  Enabled: false
 # `Kaizo/SpecDescriptionProse` requires RSpec `it`/`context` descriptions to
 # read as one-behavior prose: no commas, conjunctions (`Conjunctions`), or code
 # in an `it` description; `context` descriptions carry no code and open with a
