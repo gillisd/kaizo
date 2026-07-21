@@ -1,10 +1,14 @@
-# RuboCop::Design
+# Kaizo
 
-A [RuboCop](https://rubocop.org) extension whose cops pressure better object and
-domain design — bounding how many arguments a method declares, flagging class
-names that describe an action rather than the concept they model, flagging
-method calls nested too deeply in other calls' arguments, and treating comments
-in specs as prose that should become structure.
+A strict, punishing [RuboCop](https://rubocop.org) extension aimed at
+AI-agent-authored Ruby — holding generated code to a demanding design bar by
+bounding how many arguments a method declares, flagging class names that
+describe an action rather than the concept they model, flagging method calls
+nested too deeply in other calls' arguments, and treating comments and loose
+descriptions in specs as prose that should become structure.
+
+_Kaizo_ (改造) — "remodeling", "modification": the ruleset keeps applying
+pressure until the code is remade into something better.
 
 A long argument list is a smell: it usually means a method is juggling loose
 primitives that want to be modeled as an object. By putting a ceiling on the
@@ -26,9 +30,9 @@ end
 
 | Cop | Bounds | Counts |
 |-----|--------|--------|
-| `Design/PositionalArguments` | positional params | `arg`, `optarg` |
-| `Design/KeywordArguments` | keyword params | `kwarg`, `kwoptarg` |
-| `Design/TotalArguments` | positional + keyword | all of the above |
+| `Kaizo/PositionalArguments` | positional params | `arg`, `optarg` |
+| `Kaizo/KeywordArguments` | keyword params | `kwarg`, `kwoptarg` |
+| `Kaizo/TotalArguments` | positional + keyword | all of the above |
 
 Each cop has a `Max` option. All three check `def`, `def self.`,
 `define_method`, and `define_singleton_method`.
@@ -42,26 +46,28 @@ under each per-kind limit but exceed the total. A method that breaks more than
 one bound is reported once per cop it violates — by design — so enable the
 smallest set that expresses your rule.
 
-Beyond argument counts, the gem ships **`Design/AgentNounClassName`**, which
+Beyond argument counts, the gem ships **`Kaizo/AgentNounClassName`**, which
 flags classes named after what they *do* (see [Class naming](#class-naming)),
-**`Design/NestedMethodCalls`**, which flags calls buried too deeply in other
+**`Kaizo/NestedMethodCalls`**, which flags calls buried too deeply in other
 calls' arguments (see [Nested method calls](#nested-method-calls)), and
-**`Design/SpecComment`**, which flags comments in spec files (see
-[Comments in specs](#comments-in-specs)).
+**`Kaizo/SpecComment`**, which flags comments in spec files (see
+[Comments in specs](#comments-in-specs)), and **`Kaizo/SpecDescriptionProse`**,
+which requires `it`/`context` descriptions to read as one-behavior prose (see
+[Spec description prose](#spec-description-prose)).
 
 ## Installation
 
 Add to your `Gemfile`:
 
 ```ruby
-gem 'rubocop-design', require: false
+gem 'kaizo', require: false
 ```
 
 Enable the plugin in `.rubocop.yml`:
 
 ```yaml
 plugins:
-  - rubocop-design
+  - kaizo
 ```
 
 (Requires RuboCop 1.72.2+ for the `lint_roller` plugin API.)
@@ -73,11 +79,11 @@ argument** — to apply maximum pressure toward modeling. Loosen them if that is
 too aggressive for your codebase:
 
 ```yaml
-Design/PositionalArguments:
+Kaizo/PositionalArguments:
   Max: 1        # default
-Design/KeywordArguments:
+Kaizo/KeywordArguments:
   Max: 1        # default
-Design/TotalArguments:
+Kaizo/TotalArguments:
   Max: 2        # default (one positional + one keyword)
 ```
 
@@ -85,7 +91,7 @@ Setting `Max: 0` forbids a kind of argument entirely — for example, banning
 positional arguments so that every parameter must be passed by keyword:
 
 ```yaml
-Design/PositionalArguments:
+Kaizo/PositionalArguments:
   Max: 0        # every argument must be passed by keyword
 ```
 
@@ -120,7 +126,7 @@ object should these arguments become?), and that belongs to a human.
 ## Relationship to `Metrics/ParameterLists`
 
 Core RuboCop's `Metrics/ParameterLists` enforces a single maximum on the whole
-parameter list. `rubocop-design` is more granular: it bounds positional and
+parameter list. `kaizo` is more granular: it bounds positional and
 keyword arguments separately (and together), and is framed around domain
 modeling rather than method complexity. Use whichever fits; they can coexist.
 
@@ -143,7 +149,7 @@ or configuring `Metrics/ParameterLists`, with reproducible evidence — see
 
 ## Class naming
 
-`Design/AgentNounClassName` flags classes named as agent nouns — "doers" —
+`Kaizo/AgentNounClassName` flags classes named as agent nouns — "doers" —
 rather than the domain concepts they model. A class whose name ends in `er`/`or`
 (`OrderManager`, `PaymentProcessor`, `RequestHandler`), or in a configured
 forbidden suffix like `Service`, usually means procedural behavior that wants a
@@ -180,7 +186,7 @@ segment of a namespaced name (`Billing::InvoiceBuilder` is checked as
 Extend either list without restating the default using RuboCop's `inherit_mode`:
 
 ```yaml
-Design/AgentNounClassName:
+Kaizo/AgentNounClassName:
   inherit_mode:
     merge:
       - AllowedSuffixes
@@ -193,7 +199,7 @@ Design/AgentNounClassName:
 
 ## Nested method calls
 
-`Design/NestedMethodCalls` flags method calls nested too deeply in **argument**
+`Kaizo/NestedMethodCalls` flags method calls nested too deeply in **argument**
 positions — `foo(SomeClass.new(another("bar").chain))` — on the principle that the
 intermediate results want names. Reaching for the right name (or extracting a
 method) almost always reads better, and is easier to debug, than peeling
@@ -218,7 +224,7 @@ planned). Operator methods (`a + b`, `arr[i]`) never count, block bodies are not
 traversed, and `AllowedMethods` exempts calls to named methods:
 
 ```yaml
-Design/NestedMethodCalls:
+Kaizo/NestedMethodCalls:
   Max: 1            # default; raise to allow deeper nesting
   AllowedMethods:
     - expect        # e.g. don't count RSpec's expect(...) wrapper
@@ -229,7 +235,7 @@ name is a design decision.
 
 ## Comments in specs
 
-`Design/SpecComment` flags comments in spec files. A comment in a spec is almost
+`Kaizo/SpecComment` flags comments in spec files. A comment in a spec is almost
 always a sign that the spec is doing the job of its own description: if you need a
 sentence to explain what an example sets up or asserts, that sentence usually
 wants to be a `context`/`it` description, a clearer example name, or another
@@ -263,7 +269,7 @@ Minitest suite (using `inherit_mode: merge` to add to the default rather than
 replace it):
 
 ```yaml
-Design/SpecComment:
+Kaizo/SpecComment:
   inherit_mode:
     merge:
       - Include
@@ -276,11 +282,56 @@ Permit specific comments with `AllowedPatterns` — regexps matched against the
 full comment text, leading `#` included:
 
 ```yaml
-Design/SpecComment:
+Kaizo/SpecComment:
   AllowedPatterns:
     - '\A#\s*@rbs'       # rbs-inline type annotations
     - 'noqa'
 ```
+
+## Spec description prose
+
+`Kaizo/SpecDescriptionProse` requires RSpec `it`/`context` descriptions to read
+as one-behavior prose specifications. Every rule is **structural** — it fires
+only when the wording signals that one example is really more than one, or that
+the assertion is leaking into the name.
+
+An `it`/`specify`/`example` description must not contain:
+
+- a **comma** — a list is several behaviors;
+- a **conjunction** (`and`, `or`, `so`, `when`, `if`, `unless`, … — the
+  `Conjunctions` list) — joined clauses are separate examples, and a condition
+  belongs in a `context`;
+- **code** — `_ : # = { } ! [ ]`, a backtick, or a nested quoted literal;
+  a description is prose, not identifiers or wire values.
+
+A `context` description must not contain code, and must open with a word from
+`ContextPrefixes` (`when`/`with`/`without`/`after`). `describe` strings name the
+unit under test and are exempt.
+
+```ruby
+# bad
+it "renders the name, image, and flag"
+it "omits the key when the role is unset"
+it "renders the :cpu member"
+context "the role is unset" do
+end
+
+# good
+it "renders the name"
+it "renders the cpu member"
+context "when the role is unset" do
+  it "omits the key"
+end
+```
+
+The defaults are deliberately curated, not exhaustive: `for` is dropped from the
+conjunctions (it is a preposition in nearly every description), and homographs
+like `even`/`given`/`regardless` are left out (they collide with `even numbers`
+and the like) — add them via `Conjunctions` if you want them. Pure **wording**
+preferences that don't change structure (e.g. `should` vs a present-tense verb)
+are out of scope — rubocop-rspec's `RSpec/ExampleWording` already covers those.
+There is no autocorrection: splitting an example, or extracting a condition into
+a `context`, is a modelling decision for a human.
 
 ## Development
 
