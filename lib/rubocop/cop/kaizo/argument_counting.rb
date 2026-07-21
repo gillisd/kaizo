@@ -43,8 +43,8 @@ module RuboCop
           count = arity(node.arguments)
           return unless max && count > max
 
-          message = format(MSG, kind: self.class::KIND, count: count, max: max)
-          add_offense(offense_location(node), message: message) { self.max = count }
+          message = format(MSG, kind: self.class::KIND, count:, max:)
+          add_offense(offense_location(node), message:) { self.max = count }
         end
 
         def offense_location(node)

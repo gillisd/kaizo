@@ -78,7 +78,7 @@ module RuboCop
           message = violation(node.method_name, text)
           return unless message
 
-          add_offense(node.first_argument, message: message)
+          add_offense(node.first_argument, message:)
         end
 
         private
@@ -95,7 +95,7 @@ module RuboCop
           return COMMA_MSG if text.include?(",")
 
           word = forbidden(text, conjunctions)
-          return format(CONJUNCTION_MSG, word: word) if word
+          return format(CONJUNCTION_MSG, word:) if word
 
           CODE_MSG if code?(text)
         end

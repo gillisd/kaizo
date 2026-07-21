@@ -153,6 +153,14 @@ Kaizo/NextInNonVoidEnumerable:
 # `.rubocop.yml` at your peril.
 Style/RedundantBegin:
   Enabled: false
+
+# Prefer Ruby 3.1's hash-value shorthand -- `Session.new(table:)` over
+# `Session.new(table: table)` -- everywhere key and value name match. Shipped on
+# by default because kaizo targets modern Ruby; override in your own config if
+# you want the explicit form.
+Style/HashSyntax:
+  EnforcedShorthandSyntax: always
+
 # `Kaizo/SpecDescriptionProse` requires RSpec `it`/`context` descriptions to
 # read as one-behavior prose: no commas, conjunctions (`Conjunctions`), or code
 # in an `it` description; `context` descriptions carry no code and open with a

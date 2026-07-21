@@ -113,11 +113,11 @@ module RuboCop
         private
 
         def flag_block_local_nexts(block_node, method)
-          message = format(MSG, method: method)
+          message = format(MSG, method:)
 
           block_node.each_child_node do |child|
             each_block_local_next(child) do |next_node|
-              add_offense(next_node.loc.keyword, message: message)
+              add_offense(next_node.loc.keyword, message:)
             end
           end
         end
