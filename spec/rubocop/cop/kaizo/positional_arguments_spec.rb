@@ -1,4 +1,4 @@
-RSpec.describe RuboCop::Cop::Design::PositionalArguments, :config do
+RSpec.describe RuboCop::Cop::Kaizo::PositionalArguments, :config do
   context "with `Max: 2`" do
     let(:cop_config) { { "Max" => 2 } }
 

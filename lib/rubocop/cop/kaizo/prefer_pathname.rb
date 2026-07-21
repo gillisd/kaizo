@@ -1,6 +1,6 @@
 module RuboCop
   module Cop
-    module Design
+    module Kaizo
       # Prefer `Pathname` over `File` for the operations `Pathname` provides.
       #
       # Once a path is a `Pathname`, calling `pathname.read` or `pathname.exist?`

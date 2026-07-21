@@ -1,4 +1,4 @@
-RSpec.describe RuboCop::Cop::Design::PreferPathname, :config do
+RSpec.describe RuboCop::Cop::Kaizo::PreferPathname, :config do
   context "with a `File` method that Pathname also provides" do
     it "registers an offense for `File.read`" do
       expect_offense(<<~RUBY)

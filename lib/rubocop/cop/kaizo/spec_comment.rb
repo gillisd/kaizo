@@ -1,6 +1,6 @@
 module RuboCop
   module Cop
-    module Design
+    module Kaizo
       # Checks for comments in spec files.
       #
       # A comment in a spec is almost always a sign that the spec is doing the

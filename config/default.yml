@@ -1,39 +1,39 @@
-# Default configuration for rubocop-design.
+# Default configuration for kaizo.
 #
 # These cops apply pressure toward good domain modeling and away from primitive
-# obsession: the `Design/*` cops bound how many arguments a method declares, and
-# the `Design/*` cops flag class names that describe an action rather than the
+# obsession: the `Kaizo/*` cops bound how many arguments a method declares, and
+# the `Kaizo/*` cops flag class names that describe an action rather than the
 # concept they model.
 
-# The `Design/*` cops check `def`, `def self.`, `define_method`, and
+# The `Kaizo/*` cops check `def`, `def self.`, `define_method`, and
 # `define_singleton_method`. `*rest`, `**keyword-rest`, and `&block` parameters
 # are not counted. The defaults are deliberately strict -- at most one positional
 # and one keyword argument -- to apply maximum pressure; loosen them if that is
 # too aggressive for your codebase.
-Design/KeywordArguments:
+Kaizo/KeywordArguments:
   Description: 'Checks that a method does not declare too many keyword arguments.'
   Enabled: true
   VersionAdded: '0.1'
   Max: 1
 
-Design/PositionalArguments:
+Kaizo/PositionalArguments:
   Description: 'Checks that a method does not declare too many positional arguments.'
   Enabled: true
   VersionAdded: '0.1'
   Max: 1
 
-Design/TotalArguments:
+Kaizo/TotalArguments:
   Description: 'Checks that a method does not declare too many arguments in total.'
   Enabled: true
   VersionAdded: '0.1'
   Max: 2
 
-# `Design/AgentNounClassName` flags `class` definitions and
+# `Kaizo/AgentNounClassName` flags `class` definitions and
 # `Struct.new`/`Data.define`/`Class.new` assignments whose name ends in `er`/`or`
 # (or in a `ForbiddenSuffixes` entry), unless it ends in an `AllowedSuffixes`
 # entry. `ForbiddenSuffixes` wins over `AllowedSuffixes`. Extend either list
 # without restating it using RuboCop's `inherit_mode: merge`.
-Design/AgentNounClassName:
+Kaizo/AgentNounClassName:
   Description: 'Avoid naming classes as agent nouns (doers) rather than domain concepts.'
   Enabled: true
   VersionAdded: '0.2'
@@ -98,23 +98,23 @@ Design/AgentNounClassName:
     - Util
     - Utils
 
-# `Design/NestedMethodCalls` flags calls whose arguments are themselves calls,
+# `Kaizo/NestedMethodCalls` flags calls whose arguments are themselves calls,
 # nested deeper than `Max` levels -- e.g. `foo(SomeClass.new(another("bar").chain))`.
 # Only argument nesting is counted (receiver chains are a separate concern);
 # operator methods never count; `AllowedMethods` exempts named methods.
-Design/NestedMethodCalls:
+Kaizo/NestedMethodCalls:
   Description: 'Checks for method calls nested too deeply in argument positions.'
   Enabled: true
   VersionAdded: '0.4'
   Max: 1
   AllowedMethods: []
 
-# `Design/SpecComment` treats comments in spec files as a smell -- a comment
+# `Kaizo/SpecComment` treats comments in spec files as a smell -- a comment
 # usually wants to be a `context`/`it` description or a better-structured
 # example. Magic comments, `# rubocop:` directives, and shebangs are exempt;
 # add more exemptions with `AllowedPatterns`. Broaden `Include` (e.g. add
 # `**/spec/**/*` or `**/*_test.rb`) to cover support files or Minitest.
-Design/SpecComment:
+Kaizo/SpecComment:
   Description: 'Avoid comments in spec files; express the intent as well-structured specs.'
   Enabled: true
   VersionAdded: '0.5'
@@ -122,11 +122,43 @@ Design/SpecComment:
     - '**/*_spec.rb'
   AllowedPatterns: []
 
-# `Design/PreferPathname` flags calls to `File` class methods that have a
+# `Kaizo/SpecDescriptionProse` requires RSpec `it`/`context` descriptions to
+# read as one-behavior prose: no commas, conjunctions (`Conjunctions`), or code
+# in an `it` description; `context` descriptions carry no code and open with a
+# `ContextPrefixes` word. `describe` strings are exempt. No autocorrection.
+Kaizo/SpecDescriptionProse:
+  Description: 'Require RSpec it/context descriptions to read as one-behavior prose.'
+  Enabled: true
+  VersionAdded: '0.7'
+  Include:
+    - '**/*_spec.rb'
+  Conjunctions:
+    - and
+    - but
+    - or
+    - nor
+    - so
+    - yet
+    - when
+    - whenever
+    - if
+    - unless
+    - while
+    - until
+    - because
+    - although
+    - though
+  ContextPrefixes:
+    - when
+    - with
+    - without
+    - after
+
+# `Kaizo/PreferPathname` flags calls to `File` class methods that have a
 # `Pathname` instance-method equivalent (`File.read`, `File.exist?`, `File.join`,
 # ...), preferring `Pathname`. Runs on `**/*.rb`; `exe/**/*` and `bin/**/*` are
 # exempt by default (override with the standard Include/Exclude). No autocorrection.
-Design/PreferPathname:
+Kaizo/PreferPathname:
   Description: 'Prefer Pathname over File for methods Pathname provides.'
   Enabled: true
   VersionAdded: '0.7'
