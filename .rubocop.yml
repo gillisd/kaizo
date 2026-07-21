@@ -38,6 +38,11 @@ Style/StringLiterals:
 Style/StringLiteralsInInterpolation:
   EnforcedStyle: double_quotes
 
+# Prefer Ruby 3.1's hash-value shorthand (`foo(bar:)`), matching what kaizo ships
+# in its Public Config.
+Style/HashSyntax:
+  EnforcedShorthandSyntax: always
+
 # Frozen string literal is transitional cruft. Ruby 3.4 has chilled strings,
 # full default freeze is coming in a future Ruby.
 Style/FrozenStringLiteralComment:

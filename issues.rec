@@ -29,10 +29,10 @@ Desc: Ban all methods on File that are also present on Pathname, inside *.rb fil
 Status: in_progress
 
 Id: 3
-Updated: Tue, 21 Jul 2026 01:40:10 +0000
+Updated: Tue, 21 Jul 2026 01:49:50 +0000
 Title: Kaizo/PreferPathname: verify File.write -> Pathname#write is a true equivalent
 Desc: The cop flags File.write and suggests Pathname#write; confirm they are actually equivalent (nuances between the two have bitten before). Verified on Ruby 4.0.1: Pathname#write is a transparent builtin delegation to File.write(path, *args, **opts) -- the bytes-written return value, default truncation, a non-nil offset (seek without truncating), mode:/append, and encoding: all behave identically, for both write and binwrite. The only difference is argument shape: File.write(p, s, off, **o) takes the path first, so a rewrite moves it onto the receiver -- Pathname(p).write(s, off, **o). Conclusion: write/binwrite are safe in the banned set; optionally add a README note. (Pathname#join/chmod/split etc. genuinely differ and are already documented.)
-Status: open
+Status: closed
 
 Id: 4
 Updated: Tue, 21 Jul 2026 01:40:10 +0000

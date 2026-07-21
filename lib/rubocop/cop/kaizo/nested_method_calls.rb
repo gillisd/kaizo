@@ -48,7 +48,7 @@ module RuboCop
           depth = nesting_depth(node)
           return unless max && depth > max
 
-          add_offense(node, message: format(MSG, depth: depth, max: max)) do
+          add_offense(node, message: format(MSG, depth:, max:)) do
             self.max = depth
           end
         end

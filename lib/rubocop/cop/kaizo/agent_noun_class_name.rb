@@ -58,7 +58,7 @@ module RuboCop
         def check_name(name, location)
           return unless offending?(name)
 
-          add_offense(location, message: format(MSG, name: name))
+          add_offense(location, message: format(MSG, name:))
         end
 
         def offending?(name)

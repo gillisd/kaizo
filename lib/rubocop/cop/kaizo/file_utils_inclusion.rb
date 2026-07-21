@@ -68,7 +68,7 @@ module RuboCop
           count = own_sends(node) { |send| file_utils_call?(send) }.size
           return if count < 2
 
-          add_offense(node.loc.name, message: format(MSG, count: count, scope: scope))
+          add_offense(node.loc.name, message: format(MSG, count:, scope:))
         end
 
         # Sends in `namespace`'s own body that match the block -- not its
