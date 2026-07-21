@@ -51,9 +51,11 @@ flags classes named after what they *do* (see [Class naming](#class-naming)),
 **`Kaizo/NestedMethodCalls`**, which flags calls buried too deeply in other
 calls' arguments (see [Nested method calls](#nested-method-calls)), and
 **`Kaizo/SpecComment`**, which flags comments in spec files (see
-[Comments in specs](#comments-in-specs)), and **`Kaizo/SpecDescriptionProse`**,
+[Comments in specs](#comments-in-specs)), **`Kaizo/SpecDescriptionProse`**,
 which requires `it`/`context` descriptions to read as one-behavior prose (see
-[Spec description prose](#spec-description-prose)).
+[Spec description prose](#spec-description-prose)), and
+**`Kaizo/PreferPathname`**, which prefers `Pathname` over `File` for the
+operations `Pathname` provides (see [Prefer Pathname](#prefer-pathname)).
 
 ## Installation
 
@@ -332,6 +334,51 @@ preferences that don't change structure (e.g. `should` vs a present-tense verb)
 are out of scope — rubocop-rspec's `RSpec/ExampleWording` already covers those.
 There is no autocorrection: splitting an example, or extracting a condition into
 a `context`, is a modelling decision for a human.
+
+## Prefer Pathname
+
+`Kaizo/PreferPathname` flags calls to `File` class methods that have a `Pathname`
+instance-method equivalent — `File.read`, `File.exist?`, `File.join`,
+`File.expand_path`, and the like. Once a path is a `Pathname`, calling the method
+on it reads better than threading a string through `File`.
+
+```ruby
+# bad
+File.read(path)
+File.exist?(path)
+File.join(dir, name)
+
+# good
+path.read
+path.exist?
+dir.join(name)
+```
+
+The banned set is the intersection of `File`'s class methods and `Pathname`'s own
+public instance methods (so `File.new`, and `File.path` whose `Pathname#path`
+equivalent is protected, are left alone).
+The cop runs on `**/*.rb` and skips `exe/**/*` and `bin/**/*` by default —
+executables often work with raw path strings — which you can adjust with the
+standard `Include`/`Exclude` options:
+
+```yaml
+Kaizo/PreferPathname:
+  Exclude:
+    - 'exe/**/*'
+    - 'bin/**/*'
+    - 'db/**/*'      # add your own
+```
+
+Because the ban is broad, a few equivalents are not drop-in replacements:
+`Pathname#join` treats an absolute segment as a reset (`Pathname("a").join("/b")`
+is `/b`, where `File.join("a", "/b")` is `a/b`), `Pathname#chmod`/`chown`/`utime`
+act on the single receiver (where `File.chmod` is variadic over many paths), and
+`Pathname#split`/`rename` differ in return type and arity. The cop only points;
+mind those differences when you rewrite — part of why it does not autocorrect.
+
+As with most of the cops here, there is **no autocorrection** — rewriting
+`File.read(path)` as `Pathname(path).read` changes the receiver and is a call for
+a human.
 
 ## Development
 
