@@ -53,9 +53,12 @@ calls' arguments (see [Nested method calls](#nested-method-calls)), and
 **`Kaizo/SpecComment`**, which flags comments in spec files (see
 [Comments in specs](#comments-in-specs)), **`Kaizo/SpecDescriptionProse`**,
 which requires `it`/`context` descriptions to read as one-behavior prose (see
-[Spec description prose](#spec-description-prose)), and
-**`Kaizo/PreferPathname`**, which prefers `Pathname` over `File` for the
-operations `Pathname` provides (see [Prefer Pathname](#prefer-pathname)).
+[Spec description prose](#spec-description-prose)),
+**`Kaizo/FileUtilsInclusion`**, which asks you to `include`/`extend` `FileUtils`
+once its methods are used more than once (see
+[Including FileUtils](#including-fileutils)), and **`Kaizo/PreferPathname`**,
+which prefers `Pathname` over `File` for the operations `Pathname` provides (see
+[Prefer Pathname](#prefer-pathname)).
 
 ## Installation
 
@@ -335,6 +338,39 @@ are out of scope — rubocop-rspec's `RSpec/ExampleWording` already covers those
 There is no autocorrection: splitting an example, or extracting a condition into
 a `context`, is a modelling decision for a human.
 
+## Including FileUtils
+
+`Kaizo/FileUtilsInclusion` flags repeated qualified `FileUtils.` calls within a
+class or module: once you reach for `FileUtils` more than once, `include` it (for
+instance-level use) or `extend` it (for class/singleton-level use) and call its
+methods unqualified.
+
+```ruby
+# bad
+class Backup
+  def run
+    FileUtils.mkdir_p(dir)
+    FileUtils.cp(src, dir)
+  end
+end
+
+# good
+class Backup
+  include FileUtils
+
+  def run
+    mkdir_p(dir)
+    cp(src, dir)
+  end
+end
+```
+
+The class or module is reported once. A single qualified call is left alone, a
+namespace that already mixes `FileUtils` in is not flagged, and nested classes
+and modules are counted on their own (one call in an outer class and one in a
+nested class do not add up). As with most of the cops here, there is **no
+autocorrection** — whether to `include` or `extend`, and where the mixin belongs,
+is a design decision.
 ## Prefer Pathname
 
 `Kaizo/PreferPathname` flags calls to `File` class methods that have a `Pathname`
