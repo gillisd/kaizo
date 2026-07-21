@@ -163,3 +163,17 @@ Kaizo/FileUtilsInclusion:
   Description: 'Include or extend FileUtils instead of repeatedly qualifying its methods.'
   Enabled: true
   VersionAdded: '0.7'
+
+# `Kaizo/PreferPathname` flags calls to `File` class methods that have a
+# `Pathname` instance-method equivalent (`File.read`, `File.exist?`, `File.join`,
+# ...), preferring `Pathname`. Runs on `**/*.rb`; `exe/**/*` and `bin/**/*` are
+# exempt by default (override with the standard Include/Exclude). No autocorrection.
+Kaizo/PreferPathname:
+  Description: 'Prefer Pathname over File for methods Pathname provides.'
+  Enabled: true
+  VersionAdded: '0.7'
+  Include:
+    - '**/*.rb'
+  Exclude:
+    - 'exe/**/*'
+    - 'bin/**/*'

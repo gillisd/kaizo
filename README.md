@@ -53,10 +53,12 @@ calls' arguments (see [Nested method calls](#nested-method-calls)), and
 **`Kaizo/SpecComment`**, which flags comments in spec files (see
 [Comments in specs](#comments-in-specs)), **`Kaizo/SpecDescriptionProse`**,
 which requires `it`/`context` descriptions to read as one-behavior prose (see
-[Spec description prose](#spec-description-prose)), and
+[Spec description prose](#spec-description-prose)),
 **`Kaizo/FileUtilsInclusion`**, which asks you to `include`/`extend` `FileUtils`
 once its methods are used more than once (see
-[Including FileUtils](#including-fileutils)).
+[Including FileUtils](#including-fileutils)), and **`Kaizo/PreferPathname`**,
+which prefers `Pathname` over `File` for the operations `Pathname` provides (see
+[Prefer Pathname](#prefer-pathname)).
 
 ## Installation
 
@@ -132,6 +134,10 @@ Core RuboCop's `Metrics/ParameterLists` enforces a single maximum on the whole
 parameter list. `kaizo` is more granular: it bounds positional and
 keyword arguments separately (and together), and is framed around domain
 modeling rather than method complexity. Use whichever fits; they can coexist.
+
+For the full rationale — why the counting is implemented here rather than reusing
+or configuring `Metrics/ParameterLists`, with reproducible evidence — see
+[docs/why-not-metrics-parameterlists.md](docs/why-not-metrics-parameterlists.md).
 
 ## Known limitations
 
@@ -365,6 +371,50 @@ and modules are counted on their own (one call in an outer class and one in a
 nested class do not add up). As with most of the cops here, there is **no
 autocorrection** — whether to `include` or `extend`, and where the mixin belongs,
 is a design decision.
+## Prefer Pathname
+
+`Kaizo/PreferPathname` flags calls to `File` class methods that have a `Pathname`
+instance-method equivalent — `File.read`, `File.exist?`, `File.join`,
+`File.expand_path`, and the like. Once a path is a `Pathname`, calling the method
+on it reads better than threading a string through `File`.
+
+```ruby
+# bad
+File.read(path)
+File.exist?(path)
+File.join(dir, name)
+
+# good
+path.read
+path.exist?
+dir.join(name)
+```
+
+The banned set is the intersection of `File`'s class methods and `Pathname`'s own
+public instance methods (so `File.new`, and `File.path` whose `Pathname#path`
+equivalent is protected, are left alone).
+The cop runs on `**/*.rb` and skips `exe/**/*` and `bin/**/*` by default —
+executables often work with raw path strings — which you can adjust with the
+standard `Include`/`Exclude` options:
+
+```yaml
+Kaizo/PreferPathname:
+  Exclude:
+    - 'exe/**/*'
+    - 'bin/**/*'
+    - 'db/**/*'      # add your own
+```
+
+Because the ban is broad, a few equivalents are not drop-in replacements:
+`Pathname#join` treats an absolute segment as a reset (`Pathname("a").join("/b")`
+is `/b`, where `File.join("a", "/b")` is `a/b`), `Pathname#chmod`/`chown`/`utime`
+act on the single receiver (where `File.chmod` is variadic over many paths), and
+`Pathname#split`/`rename` differ in return type and arity. The cop only points;
+mind those differences when you rewrite — part of why it does not autocorrect.
+
+As with most of the cops here, there is **no autocorrection** — rewriting
+`File.read(path)` as `Pathname(path).read` changes the receiver and is a call for
+a human.
 
 ## Development
 
