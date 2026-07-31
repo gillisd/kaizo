@@ -5,8 +5,10 @@ module RuboCop
       #
       # A call whose arguments are themselves the results of other calls --
       # `foo(SomeClass.new(another("bar").chain))` -- packs several steps into one
-      # expression. Naming the intermediate results (or extracting a method) almost
-      # always reads better and is easier to debug than peeling parentheses apart.
+      # expression. Giving the intermediate results descriptive names (or extracting
+      # a method) almost always reads better and is easier to debug than peeling
+      # parentheses apart. The point is not the assignment but the name: it should
+      # say what the value is, so the step documents itself.
       #
       # Only nesting through *argument* positions is counted; a receiver chain such
       # as `user.account.owner.name` is a separate concern. Operator methods
@@ -21,9 +23,9 @@ module RuboCop
       #   # bad
       #   wrap(parse(read(io)))
       #
-      #   # good - name the intermediate result
-      #   parsed = parse(read(io))
-      #   wrap(parsed)
+      #   # good - a name that documents what the value is
+      #   parsed_config = parse(read(io))
+      #   wrap(parsed_config)
       #
       #   # good - a single nested call is allowed
       #   puts compute(value)
@@ -33,8 +35,8 @@ module RuboCop
 
         exclude_limit "Max"
 
-        MSG = "Avoid nesting method calls in arguments; name an intermediate " \
-              "result instead. [%<depth>d/%<max>d]".freeze
+        MSG = "Avoid nesting method calls in arguments; name the intermediate " \
+              "result to document what it is. [%<depth>d/%<max>d]".freeze
 
         # Node types whose children sit in argument position -- looked through to
         # reach nested calls (but never into a block body).

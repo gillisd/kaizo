@@ -1,5 +1,27 @@
 # Changelog
 
+## 0.7.0 (unreleased)
+
+- The argument-counting cops (`Kaizo/PositionalArguments`, `Kaizo/TotalArguments`,
+  `Kaizo/KeywordArguments`) no longer flag **operator methods**. The arity of `[]=`
+  is fixed by Ruby's syntax — an index (or indices) plus the assigned value — so it
+  cannot be modeled away; the same holds for `[]`, `<=>`, `+`, `<<`, `==`, and the
+  rest of the operator family. Covers `def`, `def self.`, and the
+  `define_method(:[]=)` form; a `define_method` whose name is computed at runtime is
+  still checked, since the name cannot be known statically. This joins the existing
+  `Struct.new`/`Data.define` `initialize` exemption. Ordinary writers
+  (`def name=(value)`) are unaffected.
+- The Public Config now ships `Style/HashSyntax` with
+  `EnforcedShorthandSyntax: always`, preferring Ruby 3.1's hash-value shorthand
+  (`Session.new(table:)` over `Session.new(table: table)`). Override it in your own
+  config if you want the explicit form. *(Shipped earlier in the 0.7.0 line but not
+  previously recorded here.)*
+- Reworded the `Kaizo/NestedMethodCalls` message to stress that the *name* is the
+  point, not the assignment: "Avoid nesting method calls in arguments; name the
+  intermediate result to document what it is." Extracting to a local called
+  `result` or `tmp` satisfies the letter of the old message while missing what it
+  was asking for.
+
 ## 0.6.0
 
 - **Renamed the gem from `rubocop-design` to `kaizo`**, and moved every cop from
