@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.7.0 (unreleased)
+## Unreleased
 
 - The argument-counting cops (`Kaizo/PositionalArguments`, `Kaizo/TotalArguments`,
   `Kaizo/KeywordArguments`) no longer flag **operator methods**. The arity of `[]=`
@@ -14,8 +14,8 @@
 - The Public Config now ships `Style/HashSyntax` with
   `EnforcedShorthandSyntax: always`, preferring Ruby 3.1's hash-value shorthand
   (`Session.new(table:)` over `Session.new(table: table)`). Override it in your own
-  config if you want the explicit form. *(Shipped earlier in the 0.7.0 line but not
-  previously recorded here.)*
+  config if you want the explicit form. *(Landed on `master` after 0.7.0 was
+  published, so it has not reached gem users yet and was never recorded here.)*
 - Reworded the `Kaizo/NestedMethodCalls` message to stress that the *name* is the
   point, not the assignment: "Avoid nesting method calls in arguments; name the
   intermediate result to document what it is." Extracting to a local called
