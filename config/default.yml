@@ -7,9 +7,11 @@
 
 # The `Kaizo/*` cops check `def`, `def self.`, `define_method`, and
 # `define_singleton_method`. `*rest`, `**keyword-rest`, and `&block` parameters
-# are not counted. The defaults are deliberately strict -- at most one positional
-# and one keyword argument -- to apply maximum pressure; loosen them if that is
-# too aggressive for your codebase.
+# are not counted. Operator methods (`[]=`, `[]`, `<=>`, ...) and the `initialize`
+# of a `Struct.new`/`Data.define` block are exempt -- their arity is fixed by Ruby
+# syntax or by the value object's members, not by a modeling choice. The defaults
+# are deliberately strict -- at most one positional and one keyword argument -- to
+# apply maximum pressure; loosen them if that is too aggressive for your codebase.
 Kaizo/KeywordArguments:
   Description: 'Checks that a method does not declare too many keyword arguments.'
   Enabled: true

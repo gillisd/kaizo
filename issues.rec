@@ -17,16 +17,16 @@ Desc: This is being manually implemented? Is there a reason? Deep dive into this
 Status: closed
 
 Id: 1
-Updated: Mon, 20 Jul 2026 19:55:34 +0000
+Updated: Fri, 31 Jul 2026 17:33:17 +0000
 Title: Add a cop requiring FileUtils to be included or extended when used more than once in a class or module
 Desc: FileUtils should be included (or extended) as a module when used more than once in a given class or module. Two or more qualified FileUtils.method calls should be flagged, with a suggestion to include FileUtils (instance-level use) or extend FileUtils (class/singleton-level use) and call the methods unqualified; a single call is fine. Decide whether to autocorrect or report only.
-Status: in_progress
+Status: closed
 
 Id: 2
-Updated: Mon, 20 Jul 2026 19:55:34 +0000
+Updated: Fri, 31 Jul 2026 17:33:17 +0000
 Title: Add a PreferPathname cop banning File methods that are also present on Pathname in *.rb files
 Desc: Ban all methods on File that are also present on Pathname, inside *.rb files (prefer Pathname, e.g. File.exist?(p) over the File form). These methods are allowed in exe/* and bin/* by default. Compute the banned set as the intersection of File methods and Pathname methods, or keep a curated list. Call the cop PreferPathname or similar. Note: per-cop Include/Exclude is standard RuboCop behavior, so ship a default Include of **/*.rb plus a default Exclude of exe/**/* and bin/**/*, and let users override.
-Status: in_progress
+Status: closed
 
 Id: 3
 Updated: Tue, 21 Jul 2026 01:49:50 +0000
@@ -35,16 +35,16 @@ Desc: The cop flags File.write and suggests Pathname#write; confirm they are act
 Status: closed
 
 Id: 4
-Updated: Tue, 21 Jul 2026 01:40:10 +0000
+Updated: Fri, 31 Jul 2026 17:33:17 +0000
 Title: Kaizo/NestedMethodCalls: reword message to stress *properly* naming the intermediate result
 Desc: Current MSG is "Avoid nesting method calls in arguments; name an intermediate result instead." Merely naming the intermediate result is not the point -- giving it a descriptive, self-documenting name is. Reword the MSG succinctly to say exactly that, e.g. "Avoid nesting method calls in arguments; name the intermediate result to document what it is." Update the cop MSG, the README, and the expected offense text in the specs.
-Status: open
+Status: closed
 
 Id: 5
-Updated: Tue, 21 Jul 2026 01:40:10 +0000
+Updated: Fri, 31 Jul 2026 17:33:17 +0000
 Title: Kaizo/PositionalArguments: exempt operator and element-assignment methods like []=
 Desc: def []=(key, value) trips Kaizo/PositionalArguments [2/1], but the arity of []= is fixed by Ruby syntax (an index -- or indices -- plus the assigned value) and cannot be modeled away; it is idiomatic, not primitive obsession. Exempt operator methods from the argument-count cops (PositionalArguments and TotalArguments). Confirmed via RuboCop's AST that a def node for []=, [], <=>, +, <<, and == all report node.operator_method? == true (and []=/foo= also report assignment_method? == true), so gating on node.operator_method? cleanly covers []=, [], and the binary operators. Mirror the existing Struct/Data initialize exemption pattern in ArgumentCounting.
-Status: open
+Status: closed
 
 Id: 6
 Updated: Tue, 21 Jul 2026 01:40:10 +0000

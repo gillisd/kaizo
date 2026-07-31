@@ -129,6 +129,24 @@ Data.define(:width, :height, :depth, :weight) do
 end
 ```
 
+**Operator methods** are exempt too. The arity of `[]=` is fixed by Ruby's syntax
+— an index (or indices) plus the value being assigned — so there is no object to
+extract and no primitive obsession to correct. The same holds for `[]`, `<=>`,
+`+`, `<<`, `==`, and the rest of the operator family:
+
+```ruby
+# not flagged
+def []=(row, column, value)
+  @cells[row][column] = value
+end
+```
+
+This covers `def`, `def self.`, and `define_method(:[]=)`. A `define_method` whose
+name is computed at runtime is still checked — the cop cannot know what the name
+resolves to. Note the exemption is for *operator* methods, not ordinary writers:
+`def name=(value)` takes a single argument and was never in danger of tripping the
+limits anyway.
+
 There is intentionally **no autocorrection**: the fix is a design decision (what
 object should these arguments become?), and that belongs to a human.
 
@@ -214,13 +232,21 @@ intermediate results want names. Reaching for the right name (or extracting a
 method) almost always reads better, and is easier to debug, than peeling
 parentheses apart.
 
+The point is not the assignment, it is the **name**. A local called `result` or
+`tmp` buys nothing; a name that says what the value *is* turns the step into its
+own documentation.
+
 ```ruby
 # bad
 wrap(parse(read(io)))
 
-# good - name the intermediate result
-parsed = parse(read(io))
-wrap(parsed)
+# bad - named, but the name says nothing
+result = parse(read(io))
+wrap(result)
+
+# good - the name documents what the value is
+parsed_config = parse(read(io))
+wrap(parsed_config)
 
 # good - a single nested call is fine
 puts compute(value)

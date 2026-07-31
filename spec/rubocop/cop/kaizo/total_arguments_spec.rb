@@ -67,6 +67,32 @@ RSpec.describe RuboCop::Cop::Kaizo::TotalArguments, :config do
     end
   end
 
+  context "with an operator method" do
+    let(:cop_config) { { "Max" => 1 } }
+
+    it "exempts element assignment (`[]=`)" do
+      expect_no_offenses(<<~RUBY)
+        def []=(key, value)
+        end
+      RUBY
+    end
+
+    it "exempts a singleton operator definition (`def self.[]=`)" do
+      expect_no_offenses(<<~RUBY)
+        def self.[]=(key, value)
+        end
+      RUBY
+    end
+
+    it "still registers an offense for a non-operator method" do
+      expect_offense(<<~RUBY)
+        def store(key, value)
+            ^^^^^ Method has too many arguments. [2/1]
+        end
+      RUBY
+    end
+  end
+
   context "with a `Struct.new` / `Data.define` value object" do
     let(:cop_config) { { "Max" => 3 } }
 
