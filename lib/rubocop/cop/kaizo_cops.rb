@@ -1,5 +1,6 @@
 require_relative "kaizo/argument_counting"
 require_relative "kaizo/keyword_arguments"
+require_relative "kaizo/plural_collection_name"
 require_relative "kaizo/positional_arguments"
 require_relative "kaizo/total_arguments"
 require_relative "kaizo/agent_noun_class_name"

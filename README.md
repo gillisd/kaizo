@@ -541,6 +541,56 @@ Kaizo/NextInNonVoidEnumerable:
   AllowedPatterns: []
 ```
 
+## Plural names for collections
+
+`Kaizo/PluralCollectionName` flags a method that hands back an array under a
+singular name. The plural does the documenting for free — `users` tells the
+caller what they are getting; `user` actively misleads them.
+
+```ruby
+# bad
+def user
+  [first_match, second_match]
+end
+
+# good
+def users
+  [first_match, second_match]
+end
+```
+
+Ruby has no return types, so "returns an array" is a heuristic — and this cop
+deliberately errs toward silence. A method is flagged only when **every** value
+it can return is unambiguously an array: an array literal, or a call to a method
+in `ArrayMethods` whose result is an `Array` whatever its receiver. A single
+branch returning something else is enough to leave the method alone:
+
+```ruby
+# good - not confidently a collection, so not flagged
+def user
+  return nil if missing?
+
+  [first_match, second_match]
+end
+```
+
+`select` and `reject` are absent from the default `ArrayMethods` on purpose: on a
+`Hash` they return a `Hash`, and including them would turn this into a
+false-positive mill. A name counts as plural when it ends in `s` or appears in
+`IrregularPlurals`. Predicate (`?`), writer (`=`), and operator methods are
+exempt, as is `initialize`.
+
+```yaml
+Kaizo/PluralCollectionName:
+  AllowedMethods: []
+  IrregularPlurals:
+    - people        # plural without a trailing `s`
+    - children
+```
+
+As with the other cops there is **no autocorrection** — only the author knows
+the right plural.
+
 ## Development
 
 ```bash

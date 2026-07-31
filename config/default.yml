@@ -18,6 +18,27 @@ Kaizo/KeywordArguments:
   VersionAdded: '0.1'
   Max: 1
 
+# `Kaizo/PluralCollectionName` flags a method that hands back an array under a
+# singular name. Ruby has no return types, so this is a heuristic, and it errs
+# toward silence: a method is flagged only when every value it can return is
+# unambiguously an array. `ArrayMethods` is the set whose result is an `Array`
+# whatever the receiver -- `select` and `reject` are absent on purpose, since on
+# a `Hash` they return a `Hash`. A name counts as plural when it ends in `s` or
+# appears in `IrregularPlurals`.
+Kaizo/PluralCollectionName:
+  Description: 'Checks that a method returning a collection is named in the plural.'
+  Enabled: true
+  VersionAdded: '0.8'
+  AllowedMethods: []
+  IrregularPlurals:
+    - people
+    - children
+    - men
+    - women
+    - data
+    - media
+    - criteria
+
 Kaizo/PositionalArguments:
   Description: 'Checks that a method does not declare too many positional arguments.'
   Enabled: true

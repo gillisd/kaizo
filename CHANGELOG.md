@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+- Add `Kaizo/PluralCollectionName` cop: flags a method that returns an array
+  under a singular name (`def user` handing back `[first, second]`), since a
+  plural name documents what the caller gets. Ruby has no return types, so the
+  detection is a heuristic and errs toward silence — a method is flagged only
+  when every value it can return is unambiguously an array, so one branch
+  returning `nil` keeps it quiet. `ArrayMethods` covers calls whose result is an
+  `Array` whatever the receiver; `select` and `reject` are excluded on purpose,
+  since on a `Hash` they return a `Hash`. Predicate, writer, and operator
+  methods are exempt, as is `initialize`. `IrregularPlurals` handles plurals
+  without a trailing `s`. No autocorrection. Enabled by default.
 - The argument-counting cops (`Kaizo/PositionalArguments`, `Kaizo/TotalArguments`,
   `Kaizo/KeywordArguments`) no longer flag **operator methods**. The arity of `[]=`
   is fixed by Ruby's syntax — an index (or indices) plus the assigned value — so it
