@@ -35,8 +35,8 @@ module RuboCop
 
         exclude_limit "Max"
 
-        MSG = "Avoid nesting method calls in arguments; name the intermediate " \
-              "result to document what it is. [%<depth>d/%<max>d]".freeze
+        MSG = "Avoid nesting method calls in arguments; name an intermediate " \
+              "result instead. [%<depth>d/%<max>d]".freeze
 
         # Node types whose children sit in argument position -- looked through to
         # reach nested calls (but never into a block body).

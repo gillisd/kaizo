@@ -16,11 +16,10 @@
   (`Session.new(table:)` over `Session.new(table: table)`). Override it in your own
   config if you want the explicit form. *(Landed on `master` after 0.7.0 was
   published, so it has not reached gem users yet and was never recorded here.)*
-- Reworded the `Kaizo/NestedMethodCalls` message to stress that the *name* is the
-  point, not the assignment: "Avoid nesting method calls in arguments; name the
-  intermediate result to document what it is." Extracting to a local called
-  `result` or `tmp` satisfies the letter of the old message while missing what it
-  was asking for.
+- Expanded the `Kaizo/NestedMethodCalls` README guidance to spell out that the
+  *name* is the point, not the assignment — extracting to a local called `result`
+  or `tmp` satisfies the rule while missing what it asks for. The offense message
+  itself is unchanged.
 
 ## 0.6.0
 

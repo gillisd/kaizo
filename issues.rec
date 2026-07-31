@@ -35,9 +35,10 @@ Desc: The cop flags File.write and suggests Pathname#write; confirm they are act
 Status: closed
 
 Id: 4
-Updated: Fri, 31 Jul 2026 17:33:17 +0000
+Updated: Fri, 31 Jul 2026 19:37:06 +0000
 Title: Kaizo/NestedMethodCalls: reword message to stress *properly* naming the intermediate result
 Desc: Current MSG is "Avoid nesting method calls in arguments; name an intermediate result instead." Merely naming the intermediate result is not the point -- giving it a descriptive, self-documenting name is. Reword the MSG succinctly to say exactly that, e.g. "Avoid nesting method calls in arguments; name the intermediate result to document what it is." Update the cop MSG, the README, and the expected offense text in the specs.
++ RESOLVED AS WON'T DO. The reword was implemented, then reverted before release; the shipped MSG is unchanged. Evidence against the premise: an AI agent building a separate gem under kaizo 0.7.0 hit this cop 7 times and, reading only the old "name an intermediate result instead" message, named every extraction descriptively (outcome, document, rubocop, rake) rather than result/tmp. n=1, but it is the only evidence either way, and it suggests the old wording was already sufficient. The README guidance making the same point was kept, since it teaches the principle without churning offense text in every downstream CI log.
 Status: closed
 
 Id: 5

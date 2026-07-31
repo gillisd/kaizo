@@ -15,3 +15,5 @@
 .rspec_status
 dist
 references
+# Scratch space for unrelated projects checked out inside this working tree.
+/excluded/

@@ -4,21 +4,21 @@ RSpec.describe RuboCop::Cop::Kaizo::NestedMethodCalls, :config do
   it "registers one offense for the canonical nested example" do
     expect_offense(<<~RUBY)
       foo(SomeClass.new(another("bar").chain))
-      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Avoid nesting method calls in arguments; name the intermediate result to document what it is. [2/1]
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Avoid nesting method calls in arguments; name an intermediate result instead. [2/1]
     RUBY
   end
 
   it "registers an offense for two-deep argument nesting" do
     expect_offense(<<~RUBY)
       wrap(parse(read(io)))
-      ^^^^^^^^^^^^^^^^^^^^^ Avoid nesting method calls in arguments; name the intermediate result to document what it is. [2/1]
+      ^^^^^^^^^^^^^^^^^^^^^ Avoid nesting method calls in arguments; name an intermediate result instead. [2/1]
     RUBY
   end
 
   it "descends through hash-literal arguments" do
     expect_offense(<<~RUBY)
       build(user: make(parse(input)))
-      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Avoid nesting method calls in arguments; name the intermediate result to document what it is. [2/1]
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Avoid nesting method calls in arguments; name an intermediate result instead. [2/1]
     RUBY
   end
 
@@ -57,7 +57,7 @@ RSpec.describe RuboCop::Cop::Kaizo::NestedMethodCalls, :config do
   it "reports a block-bearing argument call only once" do
     expect_offense(<<~RUBY)
       foo(arr.reduce(seed(deep(x))) { })
-      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Avoid nesting method calls in arguments; name the intermediate result to document what it is. [3/1]
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Avoid nesting method calls in arguments; name an intermediate result instead. [3/1]
     RUBY
   end
 

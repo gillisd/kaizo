@@ -26,6 +26,9 @@ AllCops:
     - bin/*
     - vendor/**/*
     - references/**/*
+    # Scratch space for unrelated projects checked out inside this working
+    # tree. Not part of the gem, not linted by this config, not committed.
+    - excluded/**/*
 
 # ===========================================================================
 # Overrides from stock — personal style preferences
