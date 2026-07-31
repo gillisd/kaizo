@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.8.0
 
 - Add `Kaizo/PluralCollectionName` cop: flags a method that returns an array
   under a singular name (`def user` handing back `[first, second]`), since a
@@ -30,6 +30,11 @@
   *name* is the point, not the assignment — extracting to a local called `result`
   or `tmp` satisfies the rule while missing what it asks for. The offense message
   itself is unchanged.
+
+## 0.7.0
+
+- No user-facing changes. Internal tooling and gem metadata only — nothing in
+  the shipped cops or their configuration differed from 0.6.0.
 
 ## 0.6.0
 
