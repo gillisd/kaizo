@@ -52,3 +52,9 @@ Updated: Fri, 31 Jul 2026 19:44:05 +0000
 Title: Add a cop: a method returning an array should be named as a plural collection (end in 's')
 Desc: Flag a method that returns an array (a collection) but whose name is not plural -- i.e. does not end in 's' -- since a plural name documents that a collection comes back (def users vs a singular name returning an Array is a smell). "Returns an array" must be detected heuristically: array-literal returns ([...] or return [...]), or a trailing expression known to produce an array (map/flat_map/select/reject/to_a/sort and friends). To limit false positives: only flag high-confidence array returns, exempt predicate (?) and writer (=) methods, and add config for irregular plurals (people, children) plus an allowlist. No autocorrection -- renaming is a design decision.
 Status: closed
+
+Id: 7
+Updated: Mon, 03 Aug 2026 01:57:43 -0400
+Title: Prohibit Tempfile.new
+Desc: Doesn't have predictable cleanup behavior. Enforce Tempfile.create with a block
+Status: open
