@@ -58,3 +58,9 @@ Updated: Mon, 03 Aug 2026 01:57:43 -0400
 Title: Prohibit Tempfile.new
 Desc: Doesn't have predictable cleanup behavior. Enforce Tempfile.create with a block
 Status: open
+
+Id: 8
+Updated: Thu, 06 Aug 2026 13:40:10 -0400
+Title: Idea - force subject usage in rspec
+Desc: let(:foo) { described_class.new } should be flagged. Use described class and/or filename to infer the type
+Status: open
