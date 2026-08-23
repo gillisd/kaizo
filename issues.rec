@@ -76,3 +76,9 @@ Updated: Sun, 23 Aug 2026 17:02:49 -0400
 Title: "Write the description as prose" triggers upon naming "Foo::Error"
 Desc: This is one of the very few cases that should be allowed, as an error *is* part of the spec, and *is* what the user ultimately sees when it is raised. 
 Status: open
+
+Id: 11
+Updated: Sun, 23 Aug 2026 17:05:58 -0400
+Title: Cop rdoc headers are incomplete
+Desc: Each rdoc preceeding a given cop in its class file shows the good/bad example of what gets flagged vs what doesn't, but the config plane is completely absent. The official rdoc website shows how to present both effectively. Users of kaizo currently have no way of knowing how to configure it appropriately 
+Status: open
