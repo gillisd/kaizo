@@ -238,7 +238,7 @@ Kaizo/AgentNounClassName:
       - AllowedSuffixes
       - ForbiddenSuffixes
   AllowedSuffixes:
-    - Ledger      # OrderLedger now passes
+    - Voucher     # PaymentVoucher now passes
   ForbiddenSuffixes:
     - Server      # ApiServer now flagged, despite the default allowance
 ```
@@ -601,12 +601,15 @@ their contents.
 
 Because `Style/RedundantBegin` enforces the exact opposite style, loading this
 plugin **disables it** by default — otherwise the two autocorrections would loop
-forever, each undoing the other. Re-enable it explicitly in your `.rubocop.yml`
-if you would rather not require explicit begins:
+forever, each undoing the other. To opt out of explicit begins, disable this
+cop — re-enabling `Style/RedundantBegin` alone would leave both cops on, each
+flagging the form the other mandates:
 
 ```yaml
+Kaizo/ExplicitBegin:
+  Enabled: false    # opt out of explicit begins
 Style/RedundantBegin:
-  Enabled: true     # opt back out of Kaizo/ExplicitBegin
+  Enabled: true     # optional: enforce the inverse style instead
 ```
 
 ## Next in value-returning blocks

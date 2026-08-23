@@ -20,8 +20,9 @@ module RuboCop
       # No cop-specific options; the standard per-cop settings (+Enabled+,
       # +Severity+, +AutoCorrect+, +Include+/+Exclude+) apply. Note that
       # loading the kaizo plugin disables `Style/RedundantBegin`, this cop's
-      # exact inverse; re-enable that cop in your own configuration to opt out
-      # of explicit begins.
+      # exact inverse. To opt out of explicit begins, disable this cop;
+      # re-enable `Style/RedundantBegin` only alongside that, since with both
+      # enabled each flags the form the other mandates.
       #
       # @safety
       #   Autocorrection is skipped when the body does not sit on its own lines

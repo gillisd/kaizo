@@ -37,7 +37,7 @@ module RuboCop
       #       merge:
       #         - AllowedSuffixes
       #     AllowedSuffixes:
-      #       - Ledger      # OrderLedger now passes
+      #       - Voucher     # PaymentVoucher now passes
       #
       # @example
       #   # bad
