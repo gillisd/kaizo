@@ -64,3 +64,9 @@ Updated: Thu, 06 Aug 2026 13:40:10 -0400
 Title: Idea - force subject usage in rspec
 Desc: let(:foo) { described_class.new } should be flagged. Use described class and/or filename to infer the type
 Status: open
+
+Id: 9
+Updated: Sun, 23 Aug 2026 17:00:58 -0400
+Title: "No comments in specs" is flagging files in specs/helpers.
+Desc: 1.Ensure that this dir is not included. 2. Ensure user can override using idiomatic rubocop settings where kaizo targets for any given cop, this being a prime example
+Status: open
