@@ -53,12 +53,16 @@ calls' arguments (see [Nested method calls](#nested-method-calls)),
 **`Kaizo/SpecComment`**, which flags comments in spec files (see
 [Comments in specs](#comments-in-specs)), **`Kaizo/SpecDescriptionProse`**,
 which requires `it`/`context` descriptions to read as one-behavior prose (see
-[Spec description prose](#spec-description-prose)),
+[Spec description prose](#spec-description-prose)), **`Kaizo/SpecSubject`**,
+which requires the unit under test to be declared with `subject`, not `let`
+(see [Spec subject](#spec-subject)),
 **`Kaizo/FileUtilsInclusion`**, which asks you to `include`/`extend` `FileUtils`
 once its methods are used more than once (see
 [Including FileUtils](#including-fileutils)), **`Kaizo/PreferPathname`**, which
 prefers `Pathname` over `File` for the operations `Pathname` provides (see
-[Prefer Pathname](#prefer-pathname)), **`Kaizo/ExplicitBegin`**, which requires
+[Prefer Pathname](#prefer-pathname)), **`Kaizo/TempfileCreate`**, which
+requires block-form `Tempfile.create` for temporary files (see
+[Temp files](#temp-files)), **`Kaizo/ExplicitBegin`**, which requires
 an explicit `begin` for method bodies that `rescue` or `ensure` (see
 [Explicit begin](#explicit-begin)), and **`Kaizo/NextInNonVoidEnumerable`**,
 which flags `next` used as control-flow-as-value inside `map`/`select`/`reduce`
@@ -146,6 +150,21 @@ name is computed at runtime is still checked — the cop cannot know what the na
 resolves to. Note the exemption is for *operator* methods, not ordinary writers:
 `def name=(value)` takes a single argument and was never in danger of tripping the
 limits anyway.
+
+Beyond the structural exemptions, all three cops take **`AllowedMethods`** and
+**`AllowedPatterns`** — exempt individual methods by name or by regexp. The
+classic case is `#initialize`: a constructor that legitimately gathers several
+collaborators while every other method stays under a strict `Max`:
+
+```yaml
+Kaizo/KeywordArguments:
+  Max: 1
+  AllowedMethods:
+    - initialize     # constructors may gather collaborators
+Kaizo/PositionalArguments:
+  AllowedPatterns:
+    - '\Abuild_'     # or exempt a whole naming family
+```
 
 There is intentionally **no autocorrection**: the fix is a design decision (what
 object should these arguments become?), and that belongs to a human.
@@ -291,7 +310,9 @@ it 'permits an admin to see everything' do
 end
 ```
 
-By default only `*_spec.rb` files are inspected. Magic comments
+By default only `*_spec.rb` files are inspected, and `spec/helpers/` and
+`spec/support/` are excluded — those directories hold infrastructure, not
+specs, and prose there is legitimate. Magic comments
 (`# frozen_string_literal: true`, `# encoding: …`), RuboCop directives
 (any `# rubocop:` comment), and shebangs are never flagged. Like
 the other cops, there is **no autocorrection** — turning an explanation into a
@@ -299,9 +320,10 @@ spec is a design decision.
 
 ### Scope and escape hatches
 
-The cop is scoped through its `Include`, so broaden it to cover support files or a
-Minitest suite (using `inherit_mode: merge` to add to the default rather than
-replace it):
+The cop is scoped through the standard per-cop `Include`/`Exclude`, so broaden
+it to cover support files or a Minitest suite (using `inherit_mode: merge` to
+add to the default rather than replace it), or override the default exclusions
+if you *do* want helper files policed:
 
 ```yaml
 Kaizo/SpecComment:
@@ -311,6 +333,7 @@ Kaizo/SpecComment:
   Include:
     - '**/spec/**/*'     # spec_helper, support/, factories
     - '**/*_test.rb'     # Minitest / Test::Unit
+  Exclude: []            # police spec/helpers and spec/support too
 ```
 
 Permit specific comments with `AllowedPatterns` — regexps matched against the
@@ -333,15 +356,18 @@ the assertion is leaking into the name.
 An `it`/`specify`/`example` description must not contain:
 
 - a **comma** — a list is several behaviors;
-- a **conjunction** (`and`, `or`, `so`, `when`, `if`, `unless`, … — the
-  `Conjunctions` list) — joined clauses are separate examples, and a condition
+- a **forbidden word** (`and`, `or`, `so`, `when`, `if`, `unless`, … — the
+  `ForbiddenWords` list) — joined clauses are separate examples, and a condition
   belongs in a `context`;
 - **code** — `_ : # = { } ! [ ]`, a backtick, or a nested quoted literal;
   a description is prose, not identifiers or wire values.
 
 A `context` description must not contain code, and must open with a word from
-`ContextPrefixes` (`when`/`with`/`without`/`after`). `describe` strings name the
-unit under test and are exempt.
+`RequiredContextPrefixes` (`when`/`with`/`without`/`after`). `describe` strings
+name the unit under test and are exempt. So is an **error class name**:
+`it "raises Foo::Error"` passes, because the error *is* part of the spec — it
+is what the user ultimately sees raised. Any constant path ending in `Error` or
+`Exception` reads as prose.
 
 ```ruby
 # bad
@@ -360,13 +386,76 @@ end
 ```
 
 The defaults are deliberately curated, not exhaustive: `for` is dropped from the
-conjunctions (it is a preposition in nearly every description), and homographs
+forbidden words (it is a preposition in nearly every description), and homographs
 like `even`/`given`/`regardless` are left out (they collide with `even numbers`
-and the like) — add them via `Conjunctions` if you want them. Pure **wording**
+and the like) — add them via `ForbiddenWords` if you want them. Pure **wording**
 preferences that don't change structure (e.g. `should` vs a present-tense verb)
 are out of scope — rubocop-rspec's `RSpec/ExampleWording` already covers those.
 There is no autocorrection: splitting an example, or extracting a condition into
 a `context`, is a modelling decision for a human.
+
+When a description genuinely must quote something code-shaped, exempt it with
+`AllowedPatterns` — regexps matched against the whole description — instead of
+forking the rules:
+
+```yaml
+Kaizo/SpecDescriptionProse:
+  inherit_mode:
+    merge:
+      - ForbiddenWords
+      - AllowedPatterns
+  ForbiddenWords:
+    - given              # flag `given ...` descriptions too
+  AllowedPatterns:
+    - 'Foo::Widget'      # this one identifier is allowed anywhere
+```
+
+(Before 0.9 the two lists were named `Conjunctions` and `ContextPrefixes` —
+names that said nothing about how the filter worked. The old keys are no
+longer read; rename them when upgrading.)
+
+## Spec subject
+
+`Kaizo/SpecSubject` requires the unit under test to be declared with `subject`,
+not `let`. `subject` is RSpec's name for the object being specified; hiding it
+in a `let` obscures which object the examples are about and forfeits
+`is_expected` one-liners.
+
+```ruby
+# bad
+RSpec.describe Session::Pool do
+  let(:pool) { described_class.new }
+end
+
+# good
+RSpec.describe Session::Pool do
+  subject(:pool) { described_class.new }
+end
+```
+
+A `let` (or `let!`) is flagged only when its block **confidently builds the
+class under test** — the final expression is a `.new` call on:
+
+- `described_class`;
+- the constant an enclosing `describe`/`context` names, by full
+  (`Session::Pool`) or short (`Pool`) name;
+- a constant matching the spec's file name (`pool_spec.rb` names `Pool`,
+  `api_client_spec.rb` names `APIClient`) — which is how string-description
+  specs are still covered.
+
+A `let` that builds a *deliberate* second instance — the `other` in an equality
+spec — is the escape hatch's job, matched against the `let` name:
+
+```yaml
+Kaizo/SpecSubject:
+  AllowedMethods:
+    - other          # subject == other comparisons
+  AllowedPatterns:
+    - '\Aother_'
+```
+
+As with the other spec cops there is **no autocorrection** — renaming the
+helper every example refers to is the author's call.
 
 ## Including FileUtils
 
@@ -445,6 +534,35 @@ mind those differences when you rewrite — part of why it does not autocorrect.
 As with most of the cops here, there is **no autocorrection** — rewriting
 `File.read(path)` as `Pathname(path).read` changes the receiver and is a call for
 a human.
+
+## Temp files
+
+`Kaizo/TempfileCreate` requires temporary files to be created with block-form
+`Tempfile.create` — the only temp-file API whose cleanup is deterministic. The
+block form closes **and removes** the file when the block returns, however it
+returns. Everything else cleans up unpredictably or not at all:
+
+- `Tempfile.new` (and `Tempfile.open`) remove the file in a GC finalizer that
+  runs at some arbitrary later point — possibly never, if the process dies
+  first;
+- blockless `Tempfile.create` hands back a plain `File` that is **never**
+  removed automatically.
+
+```ruby
+# bad
+file = Tempfile.new("report")
+file = Tempfile.open("report")
+file = Tempfile.create("report")
+
+# good
+Tempfile.create("report") do |file|
+  file.write(data)
+end
+```
+
+As with most of the cops here, there is **no autocorrection** — moving the
+file's users inside the block is a restructuring, and the block's return value
+replaces the handle the old code held onto.
 
 ## Explicit begin
 
@@ -580,12 +698,20 @@ false-positive mill. A name counts as plural when it ends in `s` or appears in
 `IrregularPlurals`. Predicate (`?`), writer (`=`), and operator methods are
 exempt, as is `initialize`.
 
+All three lists are configurable — extend them without restating the defaults
+via `inherit_mode: merge`:
+
 ```yaml
 Kaizo/PluralCollectionName:
-  AllowedMethods: []
+  inherit_mode:
+    merge:
+      - ArrayMethods
+      - IrregularPlurals
+  ArrayMethods:
+    - fetch_all     # your own collection-returning helper
   IrregularPlurals:
-    - people        # plural without a trailing `s`
-    - children
+    - alumni        # plural without a trailing `s`
+  AllowedMethods: []
 ```
 
 As with the other cops there is **no autocorrection** — only the author knows

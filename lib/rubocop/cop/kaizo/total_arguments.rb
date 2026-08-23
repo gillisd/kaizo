@@ -12,6 +12,19 @@ module RuboCop
       # `initialize` of a `Struct.new`/`Data.define` block is exempt, since those
       # parameters mirror the value object's attributes.
       #
+      # == Configuration
+      #
+      # [+Max+] Most arguments -- positional plus keyword -- a method may
+      #         declare. Default: +2+.
+      # [+AllowedMethods+] Method names exempt from the limit. Default: none.
+      # [+AllowedPatterns+] Regexps matched against the method name; a match is
+      #                     exempt. Default: none.
+      #
+      #   Kaizo/TotalArguments:
+      #     Max: 3
+      #     AllowedMethods:
+      #       - initialize
+      #
       # @example Max: 3
       #   # bad
       #   def calculate_volume(width, length, height, shape_type)

@@ -20,6 +20,30 @@ module RuboCop
       # outright. There is no autocorrection: renaming a method is a design
       # decision, and only its author knows the right plural.
       #
+      # == Configuration
+      #
+      # [+ArrayMethods+] Calls treated as returning an +Array+ whatever their
+      #                  receiver. Default: +map+, +flat_map+, +collect+,
+      #                  +collect_concat+, +to_a+, +entries+, +sort+, +sort_by+,
+      #                  +zip+.
+      # [+IrregularPlurals+] Names accepted as plural despite not ending in
+      #                      +s+. Default: +people+, +children+, +men+,
+      #                      +women+, +data+, +media+, +criteria+.
+      # [+AllowedMethods+] Method names never flagged. Default: none.
+      #
+      # Extend a list without restating its default via RuboCop's
+      # <tt>inherit_mode: merge</tt>:
+      #
+      #   Kaizo/PluralCollectionName:
+      #     inherit_mode:
+      #       merge:
+      #         - ArrayMethods
+      #         - IrregularPlurals
+      #     ArrayMethods:
+      #       - fetch_all
+      #     IrregularPlurals:
+      #       - alumni
+      #
       # @example
       #   # bad
       #   def user
@@ -48,7 +72,7 @@ module RuboCop
         # Methods whose result is an `Array` regardless of the receiver. Kept
         # deliberately short: anything whose return type follows its receiver
         # (`select` on a `Hash`) would turn this cop into a false-positive mill.
-        ARRAY_METHODS = %i[
+        DEFAULT_ARRAY_METHODS = %i[
           map flat_map collect collect_concat to_a entries sort sort_by zip
         ].freeze
 
@@ -103,7 +127,11 @@ module RuboCop
           return true if node.array_type?
 
           call = node.any_block_type? ? node.send_node : node
-          call.call_type? && ARRAY_METHODS.include?(call.method_name)
+          call.call_type? && array_methods.include?(call.method_name)
+        end
+
+        def array_methods
+          @array_methods ||= Array(cop_config.fetch("ArrayMethods", DEFAULT_ARRAY_METHODS)).map(&:to_sym)
         end
       end
     end

@@ -138,4 +138,23 @@ RSpec.describe RuboCop::Cop::Kaizo::TotalArguments, :config do
       RUBY
     end
   end
+
+  context "with `AllowedMethods`" do
+    let(:cop_config) { { "Max" => 1, "AllowedMethods" => ["initialize"] } }
+
+    it "exempts a listed method" do
+      expect_no_offenses(<<~RUBY)
+        def initialize(host, port: 80)
+        end
+      RUBY
+    end
+
+    it "still registers an offense for an unlisted method" do
+      expect_offense(<<~RUBY)
+        def connect(host, port: 80)
+            ^^^^^^^ Method has too many arguments. [2/1]
+        end
+      RUBY
+    end
+  end
 end

@@ -75,4 +75,60 @@ RSpec.describe RuboCop::Cop::Kaizo::SpecComment, :config do
       RUBY
     end
   end
+
+  context "with the shipped default configuration" do
+    subject(:shipped_cop) { described_class.new(shipped_config) }
+
+    let(:shipped_config) { RuboCop::ConfigLoader.load_file("config/default.yml") }
+
+    it "inspects spec files" do
+      model_spec = project_path("spec/models/user_spec.rb")
+      expect(shipped_cop.relevant_file?(model_spec)).to be(true)
+    end
+
+    it "skips spec files under spec/helpers" do
+      helper_spec = project_path("spec/helpers/api_spec.rb")
+      expect(shipped_cop.relevant_file?(helper_spec)).to be(false)
+    end
+
+    it "skips spec files under spec/support" do
+      support_spec = project_path("spec/support/matchers_spec.rb")
+      expect(shipped_cop.relevant_file?(support_spec)).to be(false)
+    end
+
+    it "skips files that are not specs" do
+      helper_file = project_path("spec/helpers/api_helper.rb")
+      expect(shipped_cop.relevant_file?(helper_file)).to be(false)
+    end
+
+    it "keeps the helper exclusion when only Include is broadened" do
+      cop = described_class.new(config_overriding("Include" => ["**/spec/**/*"]))
+      helper_file = project_path("spec/helpers/api_helper.rb")
+
+      expect(cop.relevant_file?(helper_file)).to be(false)
+    end
+
+    it "inspects support code with a broadened Include" do
+      cop = described_class.new(config_overriding("Include" => ["**/spec/**/*"]))
+      helper_file = project_path("spec/spec_helper.rb")
+
+      expect(cop.relevant_file?(helper_file)).to be(true)
+    end
+
+    it "inspects helper specs again when the exclusion is overridden" do
+      cop = described_class.new(config_overriding("Exclude" => []))
+      helper_spec = project_path("spec/helpers/api_spec.rb")
+
+      expect(cop.relevant_file?(helper_spec)).to be(true)
+    end
+
+    def project_path(relative)
+      "#{Dir.pwd}/#{relative}"
+    end
+
+    def config_overriding(overrides)
+      merged = shipped_config["Kaizo/SpecComment"].merge(overrides)
+      RuboCop::Config.new({ "Kaizo/SpecComment" => merged }, ".rubocop.yml")
+    end
+  end
 end

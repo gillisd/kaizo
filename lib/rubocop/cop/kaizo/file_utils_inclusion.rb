@@ -19,6 +19,11 @@ module RuboCop
       # There is no autocorrection: whether to `include` or `extend`, and where
       # the mixin belongs, is a judgment call for a human.
       #
+      # == Configuration
+      #
+      # No cop-specific options; the standard per-cop settings (+Enabled+,
+      # +Severity+, +Include+/+Exclude+) apply.
+      #
       # @example
       #   # bad - the `FileUtils.` receiver is repeated
       #   class Backup

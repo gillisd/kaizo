@@ -21,6 +21,17 @@ module RuboCop
       # clause might become a ternary, a `select`/`reject`, a `filter_map`, or a
       # restructured block.
       #
+      # == Configuration
+      #
+      # [+AllowedMethods+] Enumerable methods whose blocks may use `next`.
+      #                    Default: none.
+      # [+AllowedPatterns+] Regexps matched against the enumerable method's
+      #                     name; a match is exempt. Default: none.
+      #
+      #   Kaizo/NextInNonVoidEnumerable:
+      #     AllowedMethods:
+      #       - reduce      # allow `next acc` guards in reduce/inject
+      #
       # @example
       #   # bad
       #   array.map do |item|

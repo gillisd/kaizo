@@ -12,24 +12,41 @@
 # syntax or by the value object's members, not by a modeling choice. The defaults
 # are deliberately strict -- at most one positional and one keyword argument -- to
 # apply maximum pressure; loosen them if that is too aggressive for your codebase.
+# Exempt individual methods by name (`AllowedMethods`, e.g. `initialize`) or by
+# regexp (`AllowedPatterns`).
 Kaizo/KeywordArguments:
   Description: 'Checks that a method does not declare too many keyword arguments.'
   Enabled: true
   VersionAdded: '0.1'
+  VersionChanged: '0.9'
   Max: 1
+  AllowedMethods: []
+  AllowedPatterns: []
 
 # `Kaizo/PluralCollectionName` flags a method that hands back an array under a
 # singular name. Ruby has no return types, so this is a heuristic, and it errs
 # toward silence: a method is flagged only when every value it can return is
 # unambiguously an array. `ArrayMethods` is the set whose result is an `Array`
 # whatever the receiver -- `select` and `reject` are absent on purpose, since on
-# a `Hash` they return a `Hash`. A name counts as plural when it ends in `s` or
-# appears in `IrregularPlurals`.
+# a `Hash` they return a `Hash`; extend it (with `inherit_mode: merge`) to
+# cover your own collection-returning helpers. A name counts as plural when it
+# ends in `s` or appears in `IrregularPlurals`.
 Kaizo/PluralCollectionName:
   Description: 'Checks that a method returning a collection is named in the plural.'
   Enabled: true
   VersionAdded: '0.8'
+  VersionChanged: '0.9'
   AllowedMethods: []
+  ArrayMethods:
+    - map
+    - flat_map
+    - collect
+    - collect_concat
+    - to_a
+    - entries
+    - sort
+    - sort_by
+    - zip
   IrregularPlurals:
     - people
     - children
@@ -43,13 +60,19 @@ Kaizo/PositionalArguments:
   Description: 'Checks that a method does not declare too many positional arguments.'
   Enabled: true
   VersionAdded: '0.1'
+  VersionChanged: '0.9'
   Max: 1
+  AllowedMethods: []
+  AllowedPatterns: []
 
 Kaizo/TotalArguments:
   Description: 'Checks that a method does not declare too many arguments in total.'
   Enabled: true
   VersionAdded: '0.1'
+  VersionChanged: '0.9'
   Max: 2
+  AllowedMethods: []
+  AllowedPatterns: []
 
 # `Kaizo/AgentNounClassName` flags `class` definitions and
 # `Struct.new`/`Data.define`/`Class.new` assignments whose name ends in `er`/`or`
@@ -137,12 +160,18 @@ Kaizo/NestedMethodCalls:
 # example. Magic comments, `# rubocop:` directives, and shebangs are exempt;
 # add more exemptions with `AllowedPatterns`. Broaden `Include` (e.g. add
 # `**/spec/**/*` or `**/*_test.rb`) to cover support files or Minitest.
+# `spec/helpers` and `spec/support` hold infrastructure, not specs, so they
+# are excluded by default; override `Exclude` to change that.
 Kaizo/SpecComment:
   Description: 'Avoid comments in spec files; express the intent as well-structured specs.'
   Enabled: true
   VersionAdded: '0.5'
+  VersionChanged: '0.9'
   Include:
     - '**/*_spec.rb'
+  Exclude:
+    - '**/spec/helpers/**/*'
+    - '**/spec/support/**/*'
   AllowedPatterns: []
 
 # `Kaizo/ExplicitBegin` requires an explicit `begin`/`end` block when a method
@@ -185,16 +214,22 @@ Style/HashSyntax:
   EnforcedShorthandSyntax: always
 
 # `Kaizo/SpecDescriptionProse` requires RSpec `it`/`context` descriptions to
-# read as one-behavior prose: no commas, conjunctions (`Conjunctions`), or code
-# in an `it` description; `context` descriptions carry no code and open with a
-# `ContextPrefixes` word. `describe` strings are exempt. No autocorrection.
+# read as one-behavior prose: no commas, none of the `ForbiddenWords`
+# (conjunctions and conditionals whose presence signals a hidden split), and no
+# code in an `it` description; `context` descriptions carry no code and must
+# open with one of the `RequiredContextPrefixes`. Error class names
+# (`Foo::Error`) read as prose, since the error is part of the specified
+# behavior. Exempt whole descriptions with `AllowedPatterns`. `describe`
+# strings are exempt. No autocorrection.
 Kaizo/SpecDescriptionProse:
   Description: 'Require RSpec it/context descriptions to read as one-behavior prose.'
   Enabled: true
   VersionAdded: '0.6'
+  VersionChanged: '0.9'
   Include:
     - '**/*_spec.rb'
-  Conjunctions:
+  AllowedPatterns: []
+  ForbiddenWords:
     - and
     - but
     - or
@@ -210,11 +245,27 @@ Kaizo/SpecDescriptionProse:
     - because
     - although
     - though
-  ContextPrefixes:
+  RequiredContextPrefixes:
     - when
     - with
     - without
     - after
+
+# `Kaizo/SpecSubject` requires the unit under test to be declared with
+# `subject`, not `let`. A `let`/`let!` is flagged when its block confidently
+# builds the class under test: a `.new` on `described_class`, on the constant
+# an enclosing `describe`/`context` names (full or short name), or on a
+# constant matching the spec's file name. Deliberate second instances (an
+# `other` in an equality spec) are exempted with `AllowedMethods` /
+# `AllowedPatterns`, matched against the `let` name. No autocorrection.
+Kaizo/SpecSubject:
+  Description: 'Declare the unit under test with subject, not let.'
+  Enabled: true
+  VersionAdded: '0.9'
+  Include:
+    - '**/*_spec.rb'
+  AllowedMethods: []
+  AllowedPatterns: []
 
 # `Kaizo/FileUtilsInclusion` requires `FileUtils` to be mixed in with `include`
 # or `extend` once it is used more than once in a class or module, instead of
@@ -225,6 +276,16 @@ Kaizo/FileUtilsInclusion:
   Description: 'Include or extend FileUtils instead of repeatedly qualifying its methods.'
   Enabled: true
   VersionAdded: '0.6'
+
+# `Kaizo/TempfileCreate` requires block-form `Tempfile.create`, the only
+# temp-file API that closes and removes the file deterministically.
+# `Tempfile.new`/`Tempfile.open` rely on a GC finalizer that may run late or
+# never; blockless `Tempfile.create` returns a plain `File` that is never
+# removed automatically. No autocorrection.
+Kaizo/TempfileCreate:
+  Description: 'Use block-form Tempfile.create; Tempfile.new/open clean up unpredictably.'
+  Enabled: true
+  VersionAdded: '0.9'
 
 # `Kaizo/PreferPathname` flags calls to `File` class methods that have a
 # `Pathname` instance-method equivalent (`File.read`, `File.exist?`, `File.join`,

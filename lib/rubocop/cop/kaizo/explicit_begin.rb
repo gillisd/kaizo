@@ -15,6 +15,14 @@ module RuboCop
       # Modifier `rescue` expressions (`foo rescue nil`) and endless method
       # definitions are not flagged.
       #
+      # == Configuration
+      #
+      # No cop-specific options; the standard per-cop settings (+Enabled+,
+      # +Severity+, +AutoCorrect+, +Include+/+Exclude+) apply. Note that
+      # loading the kaizo plugin disables `Style/RedundantBegin`, this cop's
+      # exact inverse; re-enable that cop in your own configuration to opt out
+      # of explicit begins.
+      #
       # @safety
       #   Autocorrection is skipped when the body does not sit on its own lines
       #   between `def` and `end` (a single-line definition, for example), and

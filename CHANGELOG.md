@@ -1,5 +1,57 @@
 # Changelog
 
+## 0.9.0
+
+- Add `Kaizo/TempfileCreate` cop: requires temporary files to be created with
+  block-form `Tempfile.create`, the only temp-file API whose cleanup is
+  deterministic (the block closes and removes the file when it returns).
+  `Tempfile.new` and `Tempfile.open` are flagged — their cleanup rides on a GC
+  finalizer that may run late or never — as is blockless `Tempfile.create`,
+  which returns a plain `File` that is never removed automatically. A
+  block-pass argument (`Tempfile.create("x", &writer)`) counts as a block. No
+  autocorrection. Enabled by default.
+- Add `Kaizo/SpecSubject` cop: requires the unit under test to be declared with
+  `subject`, not `let`. A `let`/`let!` is flagged when its block confidently
+  builds the class under test — a `.new` on `described_class`, on the constant
+  an enclosing `describe`/`context` names (full or short name), or on a
+  constant matching the spec's file name (`pool_spec.rb` names `Pool`,
+  `api_client_spec.rb` names `APIClient`). Deliberate second instances (an
+  `other` in an equality spec) are exempted with `AllowedMethods` /
+  `AllowedPatterns`, matched against the `let` name. Runs on `**/*_spec.rb`.
+  No autocorrection. Enabled by default.
+- `Kaizo/SpecComment` no longer inspects `spec/helpers` or `spec/support` by
+  default: those directories hold infrastructure, not specs, and prose there is
+  legitimate. The exclusion is plain per-cop `Exclude` configuration, so
+  override it (`Exclude: []`) to police them again, or broaden/narrow the scope
+  with the standard `Include`/`Exclude` as before.
+- `Kaizo/SpecDescriptionProse` no longer flags error class names in
+  descriptions: `it "raises Foo::Error"` passes, because the error is part of
+  the specified behavior — it is what the user ultimately sees raised. Any
+  constant path whose final segment ends in `Error` or `Exception` reads as
+  prose; the rest of the description is still checked.
+- `Kaizo/SpecDescriptionProse` gains `AllowedPatterns`: regexps matched against
+  the whole description that exempt it from every rule — the ad-hoc escape
+  hatch for a description that must quote something code-shaped.
+- **Renamed** `Kaizo/SpecDescriptionProse`'s options: `Conjunctions` is now
+  `ForbiddenWords` and `ContextPrefixes` is now `RequiredContextPrefixes`. The
+  old names said nothing about whether the lists include or exclude, or how
+  the filter works; the new ones do. This is a clean break: the old keys are
+  no longer read — RuboCop warns that the parameter is unsupported and the
+  shipped defaults apply — so rename them when upgrading.
+- The argument-counting cops (`Kaizo/PositionalArguments`,
+  `Kaizo/KeywordArguments`, `Kaizo/TotalArguments`) gain `AllowedMethods` and
+  `AllowedPatterns`: exempt individual methods by name or regexp — e.g. allow
+  `#initialize` to gather collaborators while everything else stays under a
+  strict `Max`. Covers `def`, `def self.`, and the symbol/string
+  `define_method` forms.
+- `Kaizo/PluralCollectionName`'s `ArrayMethods` list is now genuinely
+  configurable (the README already described it as such); the default list is
+  spelled out in the shipped config so `inherit_mode: merge` can extend it.
+- Every cop's rdoc header now carries a `== Configuration` section documenting
+  each option, its semantics, and its default, with a ready-to-paste
+  `.rubocop.yml` snippet — the config plane was previously undocumented at the
+  class level.
+
 ## 0.8.0
 
 - Add `Kaizo/PluralCollectionName` cop: flags a method that returns an array

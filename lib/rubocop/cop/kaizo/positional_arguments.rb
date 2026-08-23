@@ -8,6 +8,18 @@ module RuboCop
       # and optional (`optarg`) parameters are counted; `*rest` and `&block` are
       # not.
       #
+      # == Configuration
+      #
+      # [+Max+] Most positional arguments a method may declare. Default: +1+.
+      # [+AllowedMethods+] Method names exempt from the limit. Default: none.
+      # [+AllowedPatterns+] Regexps matched against the method name; a match is
+      #                     exempt. Default: none.
+      #
+      #   Kaizo/PositionalArguments:
+      #     Max: 0        # force every argument to be a keyword
+      #     AllowedMethods:
+      #       - initialize
+      #
       # @example Max: 2
       #   # bad
       #   def move(x, y, z)

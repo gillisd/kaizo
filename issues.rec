@@ -54,37 +54,79 @@ Desc: Flag a method that returns an array (a collection) but whose name is not p
 Status: closed
 
 Id: 7
-Updated: Mon, 03 Aug 2026 01:57:43 -0400
+Updated: Sun, 23 Aug 2026 21:45:00 -0400
 Title: Prohibit Tempfile.new
 Desc: Doesn't have predictable cleanup behavior. Enforce Tempfile.create with a block
-Status: open
++ RESOLVED in 0.9.0 as Kaizo/TempfileCreate. Flags Tempfile.new, Tempfile.open
++ (block or not -- its block closes but removal still rides the finalizer), and
++ blockless Tempfile.create (verified on Ruby 4.0: returns a plain File that is
++ never auto-removed). Block-form Tempfile.create is the enforced shape; a
++ block-pass argument counts as a block. Report-only, no autocorrect -- moving
++ the file's users into the block is a restructuring.
+Status: closed
 
 Id: 8
-Updated: Thu, 06 Aug 2026 13:40:10 -0400
+Updated: Sun, 23 Aug 2026 21:45:00 -0400
 Title: Idea - force subject usage in rspec
 Desc: let(:foo) { described_class.new } should be flagged. Use described class and/or filename to infer the type
-Status: open
++ RESOLVED in 0.9.0 as Kaizo/SpecSubject. Flags let/let! whose block's final
++ expression is .new on described_class, on the constant an enclosing
++ describe/context names (full or short name), or on a constant matching the
++ spec filename (pool_spec.rb -> Pool, api_client_spec.rb -> APIClient,
++ case-insensitive with underscores stripped). AllowedMethods/AllowedPatterns
++ exempt deliberate second instances (let(:other) for equality specs). Promptly
++ caught a real case in kaizo's own suite while dogfooding.
+Status: closed
 
 Id: 9
-Updated: Sun, 23 Aug 2026 17:00:58 -0400
+Updated: Sun, 23 Aug 2026 21:45:00 -0400
 Title: "No comments in specs" is flagging files in specs/helpers.
 Desc: 1.Ensure that this dir is not included. 2. Ensure user can override using idiomatic rubocop settings where kaizo targets for any given cop, this being a prime example
-Status: open
++ RESOLVED in 0.9.0. Kaizo/SpecComment now ships Exclude defaults for
++ **/spec/helpers/**/* and **/spec/support/**/*. Overriding uses stock RuboCop
++ per-cop clusivity -- Exclude: [] re-polices them, inherit_mode: merge extends
++ Include -- proven by specs exercising relevant_file? against the shipped
++ config with and without user overrides. (helpers files named *_spec.rb were
++ the only way this fired before; anything not matching Include was already
++ skipped.)
+Status: closed
 
 Id: 10
-Updated: Sun, 23 Aug 2026 17:02:49 -0400
+Updated: Sun, 23 Aug 2026 21:45:00 -0400
 Title: "Write the description as prose" triggers upon naming "Foo::Error"
-Desc: This is one of the very few cases that should be allowed, as an error *is* part of the spec, and *is* what the user ultimately sees when it is raised. 
-Status: open
+Desc: This is one of the very few cases that should be allowed, as an error *is* part of the spec, and *is* what the user ultimately sees when it is raised.
++ RESOLVED in 0.9.0. Kaizo/SpecDescriptionProse masks constant paths whose
++ final segment ends in Error or Exception (Foo::Error,
++ Timeout::DeadlineException) to a neutral word before the checks run, in both
++ it and context descriptions -- so the constant passes while commas,
++ forbidden words, and other code around it are still caught.
+Status: closed
 
 Id: 11
-Updated: Sun, 23 Aug 2026 17:05:58 -0400
+Updated: Sun, 23 Aug 2026 21:45:00 -0400
 Title: Cop rdoc headers are incomplete
-Desc: Each rdoc preceeding a given cop in its class file shows the good/bad example of what gets flagged vs what doesn't, but the config plane is completely absent. The official rdoc website shows how to present both effectively. Users of kaizo currently have no way of knowing how to configure it appropriately 
-Status: open
+Desc: Each rdoc preceeding a given cop in its class file shows the good/bad example of what gets flagged vs what doesn't, but the config plane is completely absent. The official rdoc website shows how to present both effectively. Users of kaizo currently have no way of knowing how to configure it appropriately
++ RESOLVED in 0.9.0. Every cop's header now carries an rdoc == Configuration
++ section: a label list ([+Option+]) per option with semantics and default,
++ plus a verbatim .rubocop.yml snippet (inherit_mode: merge shown where lists
++ are extendable); no-option cops say so explicitly. Rendering verified with
++ rdoc 8 -- heading, <dl> label list, and code block all come out as intended.
++ While auditing, PluralCollectionName's ArrayMethods turned out to be
++ documented as config but hard-coded; it is now genuinely configurable.
+Status: closed
 
 Id: 12
-Updated: Sun, 23 Aug 2026 17:09:22 -0400
+Updated: Sun, 23 Aug 2026 22:30:00 -0400
 Title: Cops need more escape hatches for testing purposes, currently too inflexible.
 Desc: An example is the Kaizo/KeywordArguments. Perhaps this is set to 1, but the user wants to make an exception for the #initialize method, which is a common approach. Currently there is no apparent way to do this. Same thing with the prose example. There is a config var for "conjunctions" and "suffix" i believe (which are HORRIBLE words by the way, they don't signify to user whether this is inclusion or exclusion, or how the filter works at all), and one cannot ad-hoc exclude "Foo::Error" from the cop without forking the gem. Find a better way
-Status: open
++ RESOLVED in 0.9.0. (1) The three argument-count cops take RuboCop's standard
++ AllowedMethods/AllowedPatterns, so exempting #initialize is one config line.
++ (2) SpecDescriptionProse takes AllowedPatterns matched against the whole
++ description for ad-hoc exemptions; Foo::Error specifically needs no config
++ at all now (issue 10). (3) Renamed the opaque keys: Conjunctions ->
++ ForbiddenWords, ContextPrefixes -> RequiredContextPrefixes -- the names now
++ say which way the filter cuts. Clean break by design, no shim: an old key
++ gets RuboCop's stock unsupported-parameter warning, which lists the
++ supported names. (AgentNounClassName's Allowed/ForbiddenSuffixes already
++ signified in/exclusion; left as is.)
+Status: closed

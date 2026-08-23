@@ -10,6 +10,9 @@ module RuboCop
       # Operator methods (`[]=`, `[]`, `<=>`, ...) and the `initialize` of a
       # `Struct.new`/`Data.define` block are exempt.
       module ArgumentCounting
+        include AllowedMethods
+        include AllowedPattern
+
         POSITIONAL_TYPES = %i[arg optarg].freeze
         KEYWORD_TYPES = %i[kwarg kwoptarg].freeze
         DEFINE_METHODS = %i[define_method define_singleton_method].freeze
@@ -34,7 +37,7 @@ module RuboCop
 
         def on_block(node)
           return unless DEFINE_METHODS.include?(node.method_name)
-          return if defines_operator?(node)
+          return if exempt_defined_name?(node)
 
           check_arity(node)
         end
@@ -49,15 +52,22 @@ module RuboCop
         # modeled away, and a `Struct`/`Data` `initialize` just mirrors the members
         # the value object was declared with.
         def exempt?(node)
-          node.operator_method? || allowed_initialize?(node)
+          node.operator_method? || allowed_initialize?(node) || allowed_name?(node.method_name)
         end
 
-        # The same exemption for `define_method(:[]=)`, which names the method it
-        # defines with a symbol argument. A computed name is still checked -- we
-        # cannot know what it resolves to.
-        def defines_operator?(node)
+        # The same exemptions for `define_method(:[]=)`, which names the method it
+        # defines with a symbol (or string) argument. A computed name is still
+        # checked -- we cannot know what it resolves to.
+        def exempt_defined_name?(node)
           defined_name = node.send_node.first_argument
-          defined_name&.sym_type? && OPERATOR_METHOD_NAMES.include?(defined_name.value)
+          return false unless defined_name&.type?(:sym, :str)
+
+          name = defined_name.value.to_sym
+          OPERATOR_METHOD_NAMES.include?(name) || allowed_name?(name)
+        end
+
+        def allowed_name?(name)
+          allowed_method?(name) || matches_allowed_pattern?(name.to_s)
         end
 
         def positional_arity(arguments)
