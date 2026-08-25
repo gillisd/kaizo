@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.9.1
+
+- Rewrite the README example-first: every cop section leads with its bad/good
+  example, a fourteen-cop table replaces the catalog paragraph, a real
+  `rubocop --only Kaizo` transcript opens the document, and the enablement
+  policy is stated plainly (every cop ships enabled; the plugin's only
+  out-of-department change is disabling `Style/RedundantBegin`).
+- Verify the README in CI: `spec/readme_examples_spec.rb` executes every
+  example against the shipped config — bad code must be flagged by the cop
+  its marker names, good code must pass the whole department, YAML fences
+  must parse into real cops with shipped option keys, suffix claims run with
+  the documented merge applied, the console transcript is re-derived from the
+  cops, and every cop must have both a bad and a good example.
+- Fix two rdoc errors found in review: `Kaizo/AgentNounClassName`'s
+  `inherit_mode` example was a no-op (`Ledger` is already a default), and
+  `Kaizo/ExplicitBegin`'s docs called re-enabling `Style/RedundantBegin` an
+  opt-out when it leaves both cops fighting; the opt-out is disabling
+  `Kaizo/ExplicitBegin`.
+
 ## 0.9.0
 
 - Add `Kaizo/TempfileCreate` cop: requires temporary files to be created with

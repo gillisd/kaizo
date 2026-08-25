@@ -18,17 +18,31 @@ def calculate_volume(shape)
 end
 ```
 
+```console
+$ rubocop --only Kaizo volume.rb
+volume.rb:1:5: C: Kaizo/PositionalArguments: Method has too many positional arguments. [4/1]
+def calculate_volume(width, length, height, shape_type)
+    ^^^^^^^^^^^^^^^^
+volume.rb:1:5: C: Kaizo/TotalArguments: Method has too many arguments. [4/2]
+def calculate_volume(width, length, height, shape_type)
+    ^^^^^^^^^^^^^^^^
+
+1 file inspected, 2 offenses detected
+```
+
 Every example in this README is executed against the shipped configuration by
 the test suite: `# bad` code really is flagged by the named cop, `# good` code
-really passes every cop, and every YAML snippet is valid config.
+really passes every cop, every YAML snippet is valid config, and the terminal
+output above is re-derived from the cops themselves. Where a section covers
+several cops, each bad example names the one that fires.
 
 ## Cops
 
 | Cop | Flags |
 |-----|-------|
-| [`Kaizo/PositionalArguments`](#configuration) | more than `Max` positional parameters |
-| [`Kaizo/KeywordArguments`](#configuration) | more than `Max` keyword parameters |
-| [`Kaizo/TotalArguments`](#configuration) | more than `Max` parameters in total |
+| [`Kaizo/PositionalArguments`](#argument-counts) | more than `Max` positional parameters |
+| [`Kaizo/KeywordArguments`](#argument-counts) | more than `Max` keyword parameters |
+| [`Kaizo/TotalArguments`](#argument-counts) | more than `Max` parameters in total |
 | [`Kaizo/AgentNounClassName`](#class-naming) | classes named for what they do, not what they model |
 | [`Kaizo/NestedMethodCalls`](#nested-method-calls) | calls buried in other calls' arguments |
 | [`Kaizo/SpecComment`](#comments-in-specs) | comments in spec files |
@@ -40,6 +54,11 @@ really passes every cop, and every YAML snippet is valid config.
 | [`Kaizo/ExplicitBegin`](#explicit-begin) | `rescue`/`ensure` attached straight to `def` |
 | [`Kaizo/NextInNonVoidEnumerable`](#next-in-value-returning-blocks) | `next` as a value in `map`/`select`/`reduce` |
 | [`Kaizo/PluralCollectionName`](#plural-names-for-collections) | arrays returned under singular names |
+
+**Every cop ships enabled.** `plugins: [kaizo]` turns all fourteen on at
+their strict defaults — there is nothing to opt into and no pending status.
+The only cop kaizo touches outside its own department is core's
+`Style/RedundantBegin`, which it disables ([Explicit begin](#explicit-begin)).
 
 The three argument cops are independent dimensions — enable the smallest set
 that expresses your rule; a method breaking several bounds is reported once
@@ -60,7 +79,7 @@ plugins:
 
 Requires RuboCop 1.72.2+ for the `lint_roller` plugin API.
 
-## Configuration
+## Argument counts
 
 The defaults are deliberately strict — at most one positional and one keyword
 argument. Loosen them, or set a `Max` to `0` to forbid that kind entirely:
@@ -122,14 +141,7 @@ Kaizo/PositionalArguments:
     - '\Abuild_'     # or exempt a whole naming family
 ```
 
-## Relationship to `Metrics/ParameterLists`
-
-Core's `Metrics/ParameterLists` caps the whole parameter list; kaizo bounds
-positional and keyword arguments separately and is framed around domain
-modeling. They can coexist. Full rationale with reproducible evidence:
-[docs/why-not-metrics-parameterlists.md](docs/why-not-metrics-parameterlists.md).
-
-## Known limitations
+### `define_method` edge cases
 
 ```ruby
 # good — only the block form of define_method is inspected; a callable body
@@ -144,6 +156,13 @@ define_method(:squared) { _1 * _1 }
 # the declared parameters matter, not how the name is spelled
 define_method(:"handle_#{event}") { |source, payload, context| dispatch(source) }
 ```
+
+## Relationship to `Metrics/ParameterLists`
+
+Core's `Metrics/ParameterLists` caps the whole parameter list; kaizo bounds
+positional and keyword arguments separately and is framed around domain
+modeling. They can coexist. Full rationale with reproducible evidence:
+[docs/why-not-metrics-parameterlists.md](docs/why-not-metrics-parameterlists.md).
 
 ## Class naming
 

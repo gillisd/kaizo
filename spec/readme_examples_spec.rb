@@ -20,6 +20,22 @@ RSpec.describe "README examples" do
     expect(ReadmeExamples.cop_names - covered).to be_empty
   end
 
+  it "ships every cop enabled, as the README states" do
+    disabled = ReadmeExamples.cop_names.reject { |name| config[name].fetch("Enabled") }
+    expect(disabled).to be_empty
+  end
+
+  it "shows at least one real rubocop run" do
+    expect(ReadmeExamples.console_pairs).not_to be_empty
+  end
+
+  ReadmeExamples.console_pairs.each do |fence, bad_snippets|
+    it "matches the output the cops emit in the #{fence.section} run (README.md:#{fence.line_number})" do
+      console = ReadmeExamples::ConsoleCheck.new(fence, bad_snippets, check)
+      expect(console.problems).to be_empty
+    end
+  end
+
   ReadmeExamples.snippets.each do |snippet|
     describe "the #{snippet.section} example at README.md:#{snippet.line_number}" do
       if snippet.expectation == :bad

@@ -16,8 +16,7 @@ module ReadmeExamples
   # activates path-scoped cops for spec sections.
   SECTIONS = {
     "Kaizo" => ["Kaizo/PositionalArguments", APP_PATH],
-    "Configuration" => ["Kaizo/TotalArguments", APP_PATH],
-    "Known limitations" => ["Kaizo/TotalArguments", APP_PATH],
+    "Argument counts" => ["Kaizo/TotalArguments", APP_PATH],
     "Class naming" => ["Kaizo/AgentNounClassName", APP_PATH],
     "Nested method calls" => ["Kaizo/NestedMethodCalls", APP_PATH],
     "Comments in specs" => ["Kaizo/SpecComment", SPEC_PATH],
@@ -49,6 +48,29 @@ module ReadmeExamples
 
   def stale_sections = SECTIONS.keys - scan.headings
 
+  def console_pairs
+    console_fences.map { |fence| [fence, preceding_bad_snippets(fence)] }
+  end
+
+  def console_fences = scan.fences.select { |fence| fence.lang == "console" }
+
+  def preceding_bad_snippets(console)
+    source = ruby_fences_before(console).max_by(&:line_number)
+    return [] unless source
+
+    snippets.select do |snippet|
+      snippet.expectation == :bad && snippet.section == console.section &&
+        snippet.line_number >= source.line_number && snippet.line_number < console.line_number
+    end
+  end
+
+  def ruby_fences_before(console)
+    scan.fences.select do |fence|
+      fence.lang == "ruby" && fence.section == console.section &&
+        fence.line_number < console.line_number
+    end
+  end
+
   def cop_names
     RuboCop::Cop::Registry.global.names.grep(%r{\AKaizo/}).sort
   end
@@ -67,3 +89,4 @@ require_relative "readme_examples/case_split"
 require_relative "readme_examples/claim_scan"
 require_relative "readme_examples/offense_check"
 require_relative "readme_examples/config_audit"
+require_relative "readme_examples/console_check"

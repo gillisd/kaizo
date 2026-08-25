@@ -18,6 +18,14 @@ module ReadmeExamples
       run([cop_class], claim_config(claim), parse(code, (ROOT + APP_PATH).to_s)).map(&:cop_name)
     end
 
+    def rendered_lines(snippet, shown_path)
+      offenses = run(kaizo_cops, @config, parse(snippet.code, snippet.path))
+      offenses.map do |offense|
+        "#{shown_path}:#{offense.line}:#{offense.real_column}: " \
+          "#{offense.severity.code}: #{offense.cop_name}: #{offense.message}"
+      end
+    end
+
     private
 
     def run(cop_classes, config, source)
