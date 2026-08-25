@@ -11,8 +11,9 @@
 - Rewrite the README example-first: every cop section leads with its bad/good
   example, a fourteen-cop table replaces the catalog paragraph, a real
   `rubocop --only Kaizo` transcript opens the document, and the enablement
-  policy is stated plainly (every cop ships enabled; the plugin's only
-  out-of-department change is disabling `Style/RedundantBegin`).
+  policy is stated plainly (every cop ships enabled; the plugin's
+  out-of-department changes are disabling `Style/RedundantBegin` and the
+  `Style/HashSyntax` shorthand enforcement shipped since 0.8.0).
 - Verify the README in CI: `spec/readme_examples_spec.rb` executes every
   example against the shipped config — bad code must be flagged by the cop
   its marker names, good code must pass the whole department, YAML fences
@@ -24,6 +25,11 @@
   `Kaizo/ExplicitBegin`'s docs called re-enabling `Style/RedundantBegin` an
   opt-out when it leaves both cops fighting; the opt-out is disabling
   `Kaizo/ExplicitBegin`.
+- Fix a README error found in review: the enablement policy named
+  `Style/RedundantBegin` as the only out-of-department change, omitting the
+  `Style/HashSyntax` shorthand enforcement the Public Config has shipped
+  since 0.8.0. The policy now names both, and a guard spec pins the Public
+  Config's foreign-cop list to exactly the two the README names.
 
 ## 0.9.0
 

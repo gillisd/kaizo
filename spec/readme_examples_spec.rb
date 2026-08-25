@@ -25,6 +25,11 @@ RSpec.describe "README examples" do
     expect(disabled).to be_empty
   end
 
+  it "touches only the out-of-department cops the README names" do
+    foreign = config.keys.grep(%r{/}).grep_v(%r{\AKaizo/})
+    expect(foreign).to contain_exactly("Style/RedundantBegin", "Style/HashSyntax")
+  end
+
   it "shows at least one real rubocop run" do
     expect(ReadmeExamples.console_pairs).not_to be_empty
   end

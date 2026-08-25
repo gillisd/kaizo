@@ -59,8 +59,10 @@ several cops, each bad example names the one that fires.
 
 **Every cop ships enabled.** `plugins: [kaizo]` turns all fourteen on at
 their strict defaults — there is nothing to opt into and no pending status.
-The only cop kaizo touches outside its own department is core's
-`Style/RedundantBegin`, which it disables ([Explicit begin](#explicit-begin)).
+Outside its own department kaizo touches two core cops: it disables
+`Style/RedundantBegin` ([Explicit begin](#explicit-begin)) and sets
+`Style/HashSyntax` to enforce Ruby 3.1's hash-value shorthand —
+`Session.new(table:)` over `Session.new(table: table)`.
 
 The three argument cops are independent dimensions — enable the smallest set
 that expresses your rule; a method breaking several bounds is reported once
