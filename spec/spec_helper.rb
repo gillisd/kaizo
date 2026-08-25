@@ -1,5 +1,6 @@
 require "kaizo"
 require "rubocop/rspec/support"
+require_relative "support/readme_examples"
 
 RSpec.configure do |config|
   config.disable_monkey_patching!
