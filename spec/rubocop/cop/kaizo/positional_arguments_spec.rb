@@ -111,4 +111,29 @@ RSpec.describe RuboCop::Cop::Kaizo::PositionalArguments, :config do
       RUBY
     end
   end
+
+  context "with the shipped default configuration" do
+    subject(:shipped_cop) { described_class.new(shipped_config) }
+
+    let(:shipped_config) { RuboCop::ConfigLoader.load_file("config/default.yml") }
+
+    it "inspects spec trees, because positional pressure is universal" do
+      builder = project_path("spec/support/builders.rb")
+      expect(shipped_cop.relevant_file?(builder)).to be(true)
+    end
+
+    it "inspects test trees" do
+      builder = project_path("test/support/builders.rb")
+      expect(shipped_cop.relevant_file?(builder)).to be(true)
+    end
+
+    it "inspects application code" do
+      model = project_path("app/models/order.rb")
+      expect(shipped_cop.relevant_file?(model)).to be(true)
+    end
+
+    def project_path(relative)
+      "#{Dir.pwd}/#{relative}"
+    end
+  end
 end

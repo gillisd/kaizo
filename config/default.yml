@@ -14,14 +14,23 @@
 # apply maximum pressure; loosen them if that is too aggressive for your codebase.
 # Exempt individual methods by name (`AllowedMethods`, e.g. `initialize`) or by
 # regexp (`AllowedPatterns`).
+#
+# The keyword-counting cops (`KeywordArguments`, `TotalArguments`) skip `spec/`
+# and `test/` trees: wide keyword interfaces are the testing idiom there
+# (FactoryBot-style `create`/`build` helpers), and the total bound would
+# re-police the keywords the exemption frees. `PositionalArguments` runs
+# everywhere -- positional arguments communicate nothing unless they are solo.
 Kaizo/KeywordArguments:
   Description: 'Checks that a method does not declare too many keyword arguments.'
   Enabled: true
   VersionAdded: '0.1'
-  VersionChanged: '0.9'
+  VersionChanged: '0.9.1'
   Max: 1
   AllowedMethods: []
   AllowedPatterns: []
+  Exclude:
+    - '**/spec/**/*'
+    - '**/test/**/*'
 
 # `Kaizo/PluralCollectionName` flags a method that hands back an array under a
 # singular name. Ruby has no return types, so this is a heuristic, and it errs
@@ -69,10 +78,13 @@ Kaizo/TotalArguments:
   Description: 'Checks that a method does not declare too many arguments in total.'
   Enabled: true
   VersionAdded: '0.1'
-  VersionChanged: '0.9'
+  VersionChanged: '0.9.1'
   Max: 2
   AllowedMethods: []
   AllowedPatterns: []
+  Exclude:
+    - '**/spec/**/*'
+    - '**/test/**/*'
 
 # `Kaizo/AgentNounClassName` flags `class` definitions and
 # `Struct.new`/`Data.define`/`Class.new` assignments whose name ends in `er`/`or`

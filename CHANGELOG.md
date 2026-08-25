@@ -2,6 +2,12 @@
 
 ## 0.9.1
 
+- `Kaizo/KeywordArguments` and `Kaizo/TotalArguments` no longer run on `spec/`
+  and `test/` trees: wide keyword interfaces are the testing idiom there
+  (FactoryBot-style `create`/`build` helpers), and a total bound would
+  re-police the keywords the exemption frees. Override with `Exclude: []` to
+  police tests too. `Kaizo/PositionalArguments` still runs everywhere --
+  positional arguments communicate nothing unless they are solo.
 - Rewrite the README example-first: every cop section leads with its bad/good
   example, a fourteen-cop table replaces the catalog paragraph, a real
   `rubocop --only Kaizo` transcript opens the document, and the enablement

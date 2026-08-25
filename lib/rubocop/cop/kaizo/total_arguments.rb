@@ -19,6 +19,11 @@ module RuboCop
       # [+AllowedMethods+] Method names exempt from the limit. Default: none.
       # [+AllowedPatterns+] Regexps matched against the method name; a match is
       #                     exempt. Default: none.
+      # [+Exclude+] Paths the cop skips. Default: <tt>**/spec/**/*</tt> and
+      #             <tt>**/test/**/*</tt>, matching `KeywordArguments` -- a
+      #             total bound would re-police the keyword freedom tests get.
+      #             `PositionalArguments` alone still bounds positional
+      #             arguments there. Set it to <tt>[]</tt> to police tests too.
       #
       #   Kaizo/TotalArguments:
       #     Max: 3

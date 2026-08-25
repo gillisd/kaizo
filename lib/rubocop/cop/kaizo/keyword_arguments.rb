@@ -14,6 +14,11 @@ module RuboCop
       # [+AllowedMethods+] Method names exempt from the limit. Default: none.
       # [+AllowedPatterns+] Regexps matched against the method name; a match is
       #                     exempt. Default: none.
+      # [+Exclude+] Paths the cop skips. Default: <tt>**/spec/**/*</tt> and
+      #             <tt>**/test/**/*</tt> -- wide keyword interfaces are the
+      #             testing idiom (FactoryBot-style builders), so keyword
+      #             counts are not policed there. Set it to <tt>[]</tt> to
+      #             police tests too.
       #
       #   Kaizo/KeywordArguments:
       #     Max: 2

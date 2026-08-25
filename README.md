@@ -111,6 +111,35 @@ def log(*messages, **context, &formatter)
 end
 ```
 
+The keyword-counting cops skip `spec/` and `test/` trees entirely: wide
+keyword interfaces are the testing idiom — FactoryBot's `create`/`build`,
+custom builder helpers — and keywords communicate fine at any width there.
+Positional pressure is universal, because positional arguments communicate
+nothing unless they are solo:
+
+```ruby
+# good — spec/support/builders.rb: a wide keyword builder is normal test
+# infrastructure, so Kaizo/KeywordArguments and Kaizo/TotalArguments skip it
+def create_order(customer:, items:, coupon: nil, shipping: :standard)
+  Order.create(customer:, items:, coupon:, shipping:)
+end
+
+# bad — Kaizo/PositionalArguments: spec/support/builders.rb is not exempt
+# from positional pressure; three anonymous values say nothing
+def build_order(customer, items, coupon)
+  Order.create(customer:, items:, coupon:)
+end
+```
+
+Police tests like everything else by clearing the exclusion:
+
+```yaml
+Kaizo/KeywordArguments:
+  Exclude: []        # count keywords in tests too
+Kaizo/TotalArguments:
+  Exclude: []
+```
+
 Two shapes are structurally exempt:
 
 ```ruby

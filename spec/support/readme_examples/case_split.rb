@@ -2,12 +2,15 @@ module ReadmeExamples
   ##
   # Splits marked ruby fences into verifiable snippets. A marker comment
   # opens each case -- `# bad` or `# good`, optionally naming the cop it
-  # demonstrates when it is not the section's own. Unmarked code in a mapped
-  # section is reported as a violation, so no example escapes verification;
-  # the marker line itself is stripped from the code before the cops run.
+  # demonstrates when it is not the section's own, and optionally naming the
+  # path the code lives at (`# good -- spec/support/builders.rb: ...`) when
+  # path-scoped behavior is the point. Unmarked code in a mapped section is
+  # reported as a violation, so no example escapes verification; the marker
+  # line itself is stripped from the code before the cops run.
   class CaseSplit
     MARKER = /\A#\s*(bad|good)\b/
     COP_NAME = %r{Kaizo/\w+}
+    PATH_HINT = %r{[\w/]+\.rb}
 
     def initialize(fences)
       @snippets = []
@@ -47,9 +50,14 @@ module ReadmeExamples
 
       expectation = marker[MARKER, 1].to_sym
       cop_name = marker[COP_NAME] || rule.first
-      path = (ROOT + rule.last).to_s
-      @snippets << Snippet.new(section: fence.section, expectation:, cop_name:,
-                               code: "#{code}\n", path:, line_number: number)
+      snippet = Snippet.new(section: fence.section, expectation:, cop_name:,
+                            code: "#{code}\n", path: case_path(marker, rule),
+                            line_number: number)
+      @snippets << snippet
+    end
+
+    def case_path(marker, rule)
+      (ROOT + (marker[PATH_HINT] || rule.last)).to_s
     end
 
     def stray(fence, line)

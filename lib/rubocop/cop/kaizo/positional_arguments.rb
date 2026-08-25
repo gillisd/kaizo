@@ -8,6 +8,10 @@ module RuboCop
       # and optional (`optarg`) parameters are counted; `*rest` and `&block` are
       # not.
       #
+      # Unlike the keyword-counting cops, this one runs everywhere, spec and
+      # test trees included: positional arguments communicate nothing unless
+      # they are solo, in test code as much as anywhere else.
+      #
       # == Configuration
       #
       # [+Max+] Most positional arguments a method may declare. Default: +1+.

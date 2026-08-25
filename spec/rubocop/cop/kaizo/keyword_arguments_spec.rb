@@ -76,4 +76,29 @@ RSpec.describe RuboCop::Cop::Kaizo::KeywordArguments, :config do
       RUBY
     end
   end
+
+  context "with the shipped default configuration" do
+    subject(:shipped_cop) { described_class.new(shipped_config) }
+
+    let(:shipped_config) { RuboCop::ConfigLoader.load_file("config/default.yml") }
+
+    it "skips spec trees, where wide keyword builders are the idiom" do
+      builder = project_path("spec/support/builders.rb")
+      expect(shipped_cop.relevant_file?(builder)).to be(false)
+    end
+
+    it "skips test trees" do
+      builder = project_path("test/support/builders.rb")
+      expect(shipped_cop.relevant_file?(builder)).to be(false)
+    end
+
+    it "inspects application code" do
+      model = project_path("app/models/order.rb")
+      expect(shipped_cop.relevant_file?(model)).to be(true)
+    end
+
+    def project_path(relative)
+      "#{Dir.pwd}/#{relative}"
+    end
+  end
 end
