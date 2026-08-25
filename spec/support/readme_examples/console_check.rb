@@ -56,7 +56,7 @@ module ReadmeExamples
 
     def stray_problems
       @fence.body.reject { |line| recognized?(line) }
-                 .map { |line| "unrecognized line in #{locate}: #{line.inspect}" }
+            .map { |line| "unrecognized line in #{locate}: #{line.inspect}" }
     end
 
     def recognized?(line)
