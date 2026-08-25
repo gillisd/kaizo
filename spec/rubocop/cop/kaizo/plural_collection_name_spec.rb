@@ -135,4 +135,27 @@ RSpec.describe RuboCop::Cop::Kaizo::PluralCollectionName, :config do
       RUBY
     end
   end
+
+  context "with a custom `ArrayMethods` list" do
+    let(:cop_config) do
+      { "ArrayMethods" => ["fetch_all"], "IrregularPlurals" => [] }
+    end
+
+    it "flags a trailing call to the configured method" do
+      expect_offense(<<~RUBY)
+        def user
+            ^^^^ Name a method that returns a collection in the plural. `user` returns an array.
+          fetch_all(scope)
+        end
+      RUBY
+    end
+
+    it "no longer flags the default methods the custom list replaced" do
+      expect_no_offenses(<<~RUBY)
+        def name
+          rows.map { |row| row.to_s }
+        end
+      RUBY
+    end
+  end
 end

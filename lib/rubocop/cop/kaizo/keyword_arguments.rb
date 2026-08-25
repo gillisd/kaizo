@@ -8,6 +8,23 @@ module RuboCop
       # (`kwarg`) and optional (`kwoptarg`) parameters are counted; `**rest` is
       # not.
       #
+      # == Configuration
+      #
+      # [+Max+] Most keyword arguments a method may declare. Default: +1+.
+      # [+AllowedMethods+] Method names exempt from the limit. Default: none.
+      # [+AllowedPatterns+] Regexps matched against the method name; a match is
+      #                     exempt. Default: none.
+      # [+Exclude+] Paths the cop skips. Default: <tt>**/spec/**/*</tt> and
+      #             <tt>**/test/**/*</tt> -- wide keyword interfaces are the
+      #             testing idiom (FactoryBot-style builders), so keyword
+      #             counts are not policed there. Set it to <tt>[]</tt> to
+      #             police tests too.
+      #
+      #   Kaizo/KeywordArguments:
+      #     Max: 2
+      #     AllowedMethods:
+      #       - initialize
+      #
       # @example Max: 2
       #   # bad
       #   def calculate_volume(width:, length:, height:)
@@ -15,6 +32,11 @@ module RuboCop
       #
       #   # good
       #   def calculate_volume(shape)
+      #   end
+      #
+      # @example AllowedMethods: ['initialize'] (default: [])
+      #   # good - exempt by name
+      #   def initialize(host:, port:, ssl: true)
       #   end
       #
       class KeywordArguments < Base

@@ -12,6 +12,24 @@ module RuboCop
       # `initialize` of a `Struct.new`/`Data.define` block is exempt, since those
       # parameters mirror the value object's attributes.
       #
+      # == Configuration
+      #
+      # [+Max+] Most arguments -- positional plus keyword -- a method may
+      #         declare. Default: +2+.
+      # [+AllowedMethods+] Method names exempt from the limit. Default: none.
+      # [+AllowedPatterns+] Regexps matched against the method name; a match is
+      #                     exempt. Default: none.
+      # [+Exclude+] Paths the cop skips. Default: <tt>**/spec/**/*</tt> and
+      #             <tt>**/test/**/*</tt>, matching `KeywordArguments` -- a
+      #             total bound would re-police the keyword freedom tests get.
+      #             `PositionalArguments` alone still bounds positional
+      #             arguments there. Set it to <tt>[]</tt> to police tests too.
+      #
+      #   Kaizo/TotalArguments:
+      #     Max: 3
+      #     AllowedMethods:
+      #       - initialize
+      #
       # @example Max: 3
       #   # bad
       #   def calculate_volume(width, length, height, shape_type)

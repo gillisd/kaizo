@@ -15,6 +15,19 @@ module RuboCop
       # There is no autocorrection: rewriting `File.read(path)` as
       # `Pathname(path).read` changes the receiver and is left to a human.
       #
+      # == Configuration
+      #
+      # [+Include+] Files the cop runs on. Default: <tt>**/*.rb</tt>.
+      # [+Exclude+] Files the cop skips even when included. Default:
+      #             <tt>exe/**/*</tt> and <tt>bin/**/*</tt>.
+      #
+      #   Kaizo/PreferPathname:
+      #     inherit_mode:
+      #       merge:
+      #         - Exclude
+      #     Exclude:
+      #       - 'db/**/*'      # add your own
+      #
       # @example
       #   # bad
       #   File.read(path)

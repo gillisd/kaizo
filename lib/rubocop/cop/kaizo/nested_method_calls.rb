@@ -16,6 +16,18 @@ module RuboCop
       # Depth is measured from each outermost call and reported once. There is no
       # autocorrection: choosing the intermediate name is a design decision.
       #
+      # == Configuration
+      #
+      # [+Max+] Deepest allowed nesting of calls in argument positions; +1+
+      #         permits one nested call. Default: +1+.
+      # [+AllowedMethods+] Calls to these methods neither count toward depth
+      #                    nor get flagged. Default: none.
+      #
+      #   Kaizo/NestedMethodCalls:
+      #     Max: 2
+      #     AllowedMethods:
+      #       - expect      # don't count RSpec's expect(...) wrapper
+      #
       # @example Max: 1 (default)
       #   # bad
       #   foo(SomeClass.new(another("bar").chain))

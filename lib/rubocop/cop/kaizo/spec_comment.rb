@@ -9,11 +9,33 @@ module RuboCop
       # `context`/`it` description, a clearer example name, or another example --
       # not prose riding alongside the code.
       #
-      # By default only `*_spec.rb` files are inspected (see `Include`). Magic
+      # By default only `*_spec.rb` files are inspected, and `spec/helpers` and
+      # `spec/support` are excluded -- they hold infrastructure, not specs. Magic
       # comments (`# frozen_string_literal: true`, `# encoding: ...`), RuboCop
       # directives (any `# rubocop:` comment), and shebangs are
       # never flagged; add further exemptions with `AllowedPatterns`. There is no
       # autocorrection: turning an explanation into a spec is a design decision.
+      #
+      # == Configuration
+      #
+      # [+Include+] Files the cop runs on. Default: <tt>**/*_spec.rb</tt>.
+      #             Broaden it to cover support files or a Minitest suite.
+      # [+Exclude+] Files the cop skips even when included. Default:
+      #             <tt>**/spec/helpers/**/*</tt> and
+      #             <tt>**/spec/support/**/*</tt>. Set it to <tt>[]</tt> to
+      #             inspect those too.
+      # [+AllowedPatterns+] Regexps matched against the full comment text,
+      #                     leading +#+ included; a match is exempt.
+      #                     Default: none.
+      #
+      #   Kaizo/SpecComment:
+      #     inherit_mode:
+      #       merge:
+      #         - Include
+      #     Include:
+      #       - '**/*_test.rb'     # Minitest too
+      #     AllowedPatterns:
+      #       - '\A#\s*@rbs'       # rbs-inline type annotations
       #
       # @example
       #   # bad

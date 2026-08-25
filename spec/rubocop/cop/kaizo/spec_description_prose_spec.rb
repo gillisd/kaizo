@@ -76,6 +76,103 @@ RSpec.describe RuboCop::Cop::Kaizo::SpecDescriptionProse, :config do
     end
   end
 
+  context "with an error class name in an `it` description" do
+    it "does not flag a namespaced error constant" do
+      expect_no_offenses(<<~RUBY)
+        it "raises Foo::Error"
+      RUBY
+    end
+
+    it "does not flag an exception-suffixed constant" do
+      expect_no_offenses(<<~RUBY)
+        it "raises Timeout::DeadlineException on a slow read"
+      RUBY
+    end
+
+    it "still flags a conjunction alongside an error constant" do
+      expect_offense(<<~RUBY)
+        it "raises Foo::Error when the name is empty"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Split this example: its description contains `when`; use separate examples or a `context`.
+      RUBY
+    end
+
+    it "still flags code outside the error constant" do
+      expect_offense(<<~RUBY)
+        it "raises Foo::Error for the :cpu key"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Write the description as prose; it contains code, not English.
+      RUBY
+    end
+  end
+
+  context "with an error class name in a `context` description" do
+    it "does not flag the constant" do
+      expect_no_offenses(<<~RUBY)
+        context "when Foo::Error is raised" do
+        end
+      RUBY
+    end
+  end
+
+  context "when AllowedPatterns permits a description" do
+    let(:cop_config) { { "AllowedPatterns" => ["Foo::Widget"] } }
+
+    it "does not flag a matching `it` description" do
+      expect_no_offenses(<<~RUBY)
+        it "returns a Foo::Widget"
+      RUBY
+    end
+
+    it "does not flag a matching `context` description" do
+      expect_no_offenses(<<~RUBY)
+        context "with a Foo::Widget" do
+        end
+      RUBY
+    end
+
+    it "still flags a description the pattern does not match" do
+      expect_offense(<<~RUBY)
+        it "renders the :cpu key"
+           ^^^^^^^^^^^^^^^^^^^^^^ Write the description as prose; it contains code, not English.
+      RUBY
+    end
+  end
+
+  context "with a custom `ForbiddenWords` list" do
+    let(:cop_config) { { "ForbiddenWords" => ["sometimes"] } }
+
+    it "flags the configured word" do
+      expect_offense(<<~RUBY)
+        it "sometimes renders the name"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Split this example: its description contains `sometimes`; use separate examples or a `context`.
+      RUBY
+    end
+
+    it "does not flag the default words the custom list replaced" do
+      expect_no_offenses(<<~RUBY)
+        it "appends the container and returns it"
+      RUBY
+    end
+  end
+
+  context "with a custom `RequiredContextPrefixes` list" do
+    let(:cop_config) { { "RequiredContextPrefixes" => ["given"] } }
+
+    it "accepts the configured prefix" do
+      expect_no_offenses(<<~RUBY)
+        context "given an admin role" do
+        end
+      RUBY
+    end
+
+    it "rejects a default prefix and names the configured ones" do
+      expect_offense(<<~RUBY)
+        context "when the role is unset" do
+                ^^^^^^^^^^^^^^^^^^^^^^^^ Begin the context description with `given`.
+        end
+      RUBY
+    end
+  end
+
   context "with a block-form example" do
     it "still flags the description" do
       expect_offense(<<~RUBY)

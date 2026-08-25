@@ -16,6 +16,29 @@ module RuboCop
       # assignments are both checked. There is no autocorrection: renaming a
       # class is a design decision.
       #
+      # == Configuration
+      #
+      # [+AllowedSuffixes+] Suffixes exempt from the `er`/`or` rule, matched
+      #                     against the end of the name (+Controller+ clears
+      #                     +UsersController+ too). Default: a broad list of
+      #                     legitimate `-er`/`-or` domain nouns and framework
+      #                     terms (+Adapter+, +Controller+, +Error+, +User+,
+      #                     ...) -- see +config/default.yml+ for all of them.
+      # [+ForbiddenSuffixes+] Suffixes always flagged, even when matched by
+      #                       +AllowedSuffixes+ -- which is how a default
+      #                       exemption is dropped. Default: +Service+, +Util+,
+      #                       +Utils+.
+      #
+      # Extend either list without restating it via RuboCop's
+      # <tt>inherit_mode: merge</tt>:
+      #
+      #   Kaizo/AgentNounClassName:
+      #     inherit_mode:
+      #       merge:
+      #         - AllowedSuffixes
+      #     AllowedSuffixes:
+      #       - Voucher     # PaymentVoucher now passes
+      #
       # @example
       #   # bad
       #   class PaymentProcessor
