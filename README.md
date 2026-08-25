@@ -1,5 +1,7 @@
 # Kaizo
 
+『スーパーマリオワールド　カイゾウ』
+
 A strict, punishing [RuboCop](https://rubocop.org) extension aimed at
 AI-agent-authored Ruby — holding generated code to a demanding design bar.
 
