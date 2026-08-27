@@ -130,3 +130,11 @@ Desc: An example is the Kaizo/KeywordArguments. Perhaps this is set to 1, but th
 + supported names. (AgentNounClassName's Allowed/ForbiddenSuffixes already
 + signified in/exclusion; left as is.)
 Status: closed
+
+Id: 13
+Updated: Thu, 27 Aug 2026 12:06:00 -0400
+Title: Argument cops should exclude methods on standard ruby classes, like respond_to_missing?
+Desc: test/test_helper.rb:58:7: C: Kaizo/PositionalArguments: Method has too many positional arguments. [2/1]
++   def respond_to_missing?(name, include_private = false)
++       ^^^^^^^^^^^^^^^^^^^
+Status: open
